@@ -2,9 +2,11 @@ import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, User, BarChart2, LogOut } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContext';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
+    const { getCartCount } = useContext(CartContext);
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -41,9 +43,14 @@ const Navbar = () => {
                                     <User size={20} />
                                 </Link>
                             )}
-                            <button className="hover:text-gray-600 transition-colors">
+                            <Link to="/cart" className="hover:text-gray-600 transition-colors relative">
                                 <ShoppingBag size={20} />
-                            </button>
+                                {getCartCount() > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-black text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                        {getCartCount()}
+                                    </span>
+                                )}
+                            </Link>
                         </div>
                     </div>
                 </div>

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Masonry from 'react-masonry-css';
 import axios from 'axios';
+import { CartContext } from '../context/CartContext';
 
 const ProductGrid = () => {
+    const { addToCart } = useContext(CartContext);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({ category: '', subCategory: '' });
@@ -77,7 +79,18 @@ const ProductGrid = () => {
                                 )}
                             </div>
                             <h3 className="text-sm font-medium truncate">{product.name}</h3>
-                            <p className="text-sm text-gray-500 mt-1">${product.price}</p>
+                            <div className="flex justify-between items-center mt-1">
+                                <p className="text-sm text-gray-500">${product.price}</p>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        addToCart(product);
+                                    }}
+                                    className="text-xs font-bold underline hover:text-gray-600"
+                                >
+                                    ADD TO CART
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </Masonry>
