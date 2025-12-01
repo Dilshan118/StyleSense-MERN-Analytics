@@ -56,7 +56,7 @@ const ProductDetails = () => {
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
-            <div className="pt-16 lg:pt-0 flex flex-col lg:flex-row min-h-screen">
+            <div className="pt-24 lg:pt-0 flex flex-col lg:flex-row min-h-screen">
                 {/* Left: Image Section */}
                 <div className="lg:w-2/3 bg-[#f5f5f5] relative flex items-center justify-center min-h-[50vh] lg:min-h-screen">
                     <img
@@ -98,8 +98,8 @@ const ProductDetails = () => {
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
                                             className={`py-3 border rounded-md text-sm font-medium transition-all ${selectedSize === size
-                                                    ? 'border-black bg-black text-white'
-                                                    : 'border-gray-200 hover:border-black text-gray-900'
+                                                ? 'border-black bg-black text-white'
+                                                : 'border-gray-200 hover:border-black text-gray-900'
                                                 }`}
                                         >
                                             {size}
@@ -112,8 +112,8 @@ const ProductDetails = () => {
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
                                             className={`py-3 border rounded-md text-sm font-medium transition-all ${selectedSize === size
-                                                    ? 'border-black bg-black text-white'
-                                                    : 'border-gray-200 hover:border-black text-gray-900'
+                                                ? 'border-black bg-black text-white'
+                                                : 'border-gray-200 hover:border-black text-gray-900'
                                                 }`}
                                         >
                                             {size}

@@ -47,7 +47,7 @@ const Cart = () => {
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
-            <div className="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="pt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h1 className="text-3xl font-serif font-bold mb-8">YOUR CART</h1>
 
                 {cart.length === 0 ? (
