@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import Masonry from 'react-masonry-css';
 import axios from 'axios';
 import { CartContext } from '../context/CartContext';
@@ -66,19 +67,21 @@ const ProductGrid = () => {
                 >
                     {products.map((product) => (
                         <div key={product._id} className="mb-8 group cursor-pointer">
-                            <div className="relative overflow-hidden bg-gray-100 aspect-[3/4] mb-4">
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                />
-                                {product.isTrending && (
-                                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 text-xs font-bold tracking-wider">
-                                        TRENDING
-                                    </div>
-                                )}
-                            </div>
-                            <h3 className="text-sm font-medium truncate">{product.name}</h3>
+                            <Link to={`/product/${product._id}`}>
+                                <div className="relative overflow-hidden bg-gray-100 aspect-[3/4] mb-4">
+                                    <img
+                                        src={product.image}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                    {product.isTrending && (
+                                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 text-xs font-bold tracking-wider">
+                                            TRENDING
+                                        </div>
+                                    )}
+                                </div>
+                                <h3 className="text-sm font-medium truncate">{product.name}</h3>
+                            </Link>
                             <div className="flex justify-between items-center mt-1">
                                 <p className="text-sm text-gray-500">${product.price}</p>
                                 <button
