@@ -47,68 +47,102 @@ const Cart = () => {
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
-            <div className="pt-32 max-w-full mx-auto px-6 lg:px-12">
-                <h1 className="text-3xl font-bold mb-8 tracking-tight">YOUR CART</h1>
+            <div className="pt-32 max-w-[1100px] mx-auto px-6 lg:px-8 pb-20">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="text-2xl font-medium tracking-tight">Bag</h1>
+                    {cart.length === 0 && (
+                        <p className="text-gray-500 mt-2">There are no items in your bag.</p>
+                    )}
+                </div>
 
                 {cart.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-gray-500 mb-4">Your cart is empty.</p>
+                    <div className="mt-8">
                         <button
                             onClick={() => navigate('/')}
-                            className="text-black underline font-medium hover:text-gray-600"
+                            className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors"
                         >
-                            Continue Shopping
+                            Start Shopping
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                        <div className="lg:col-span-2">
+                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
+                        {/* Left: Bag Items */}
+                        <div className="flex-1 space-y-8">
                             {cart.map((item, index) => (
-                                <div key={`${item._id}-${index}`} className="flex gap-4 border-b border-gray-100 py-6">
-                                    <div className="w-24 h-32 bg-gray-100 flex-shrink-0">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                <div key={`${item._id}-${index}`} className="flex gap-6 border-b border-gray-100 pb-8">
+                                    {/* Product Image */}
+                                    <div className="w-36 h-36 bg-[#f5f5f5] flex-shrink-0">
+                                        <img
+                                            src={item.image}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover mix-blend-multiply"
+                                        />
                                     </div>
-                                    <div className="flex-1">
+
+                                    {/* Product Details */}
+                                    <div className="flex-1 flex flex-col justify-between">
                                         <div className="flex justify-between items-start">
-                                            <div>
-                                                <h3 className="font-medium">{item.name}</h3>
-                                                <p className="text-sm text-gray-500 mt-1">Size: {item.size} | Color: {item.color}</p>
-                                                <p className="text-sm text-gray-500 mt-1">Qty: {item.quantity}</p>
+                                            <div className="space-y-1">
+                                                <h3 className="font-medium text-base text-gray-900">{item.name}</h3>
+                                                <p className="text-gray-500 text-sm">{item.category}'s {item.subCategory}</p>
+                                                <p className="text-gray-500 text-sm">{item.color}</p>
+                                                <div className="flex gap-4 text-sm text-gray-500 mt-1">
+                                                    <p>Size <span className="text-gray-900">{item.size}</span></p>
+                                                    <p>Quantity <span className="text-gray-900">{item.quantity}</span></p>
+                                                </div>
                                             </div>
-                                            <p className="font-medium">${item.price * item.quantity}</p>
+                                            <p className="font-medium text-base">${item.price * item.quantity}</p>
                                         </div>
-                                        <button
-                                            onClick={() => removeFromCart(item._id, item.size, item.color)}
-                                            className="text-gray-400 hover:text-red-500 mt-4 transition-colors"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+
+                                        {/* Actions */}
+                                        <div className="flex gap-6 mt-4">
+                                            <button className="text-gray-500 hover:text-black transition-colors">
+                                                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" role="img" width="24px" height="24px" fill="none"><path stroke="currentColor" strokeWidth="1.5" d="M16.794 3.75c1.324 0 2.568.516 3.504 1.451a4.96 4.96 0 010 7.008L12 20.508l-8.299-8.299a4.96 4.96 0 010-7.007A4.923 4.923 0 017.205 3.75c1.324 0 2.568.516 3.504 1.451l.76.76.531.531.53-.531.76-.76a4.926 4.926 0 013.504-1.451"></path></svg>
+                                            </button>
+                                            <button
+                                                onClick={() => removeFromCart(item._id, item.size, item.color)}
+                                                className="text-gray-500 hover:text-black transition-colors"
+                                            >
+                                                <Trash2 size={20} strokeWidth={1.5} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="lg:col-span-1">
-                            <div className="bg-[#f5f5f5] p-8 rounded-xl">
-                                <h2 className="text-lg font-bold mb-4">ORDER SUMMARY</h2>
-                                <div className="flex justify-between mb-2">
-                                    <span className="text-gray-600">Subtotal</span>
-                                    <span>${getCartTotal()}</span>
+                        {/* Right: Summary */}
+                        <div className="lg:w-[350px] flex-shrink-0">
+                            <div className="sticky top-32">
+                                <h2 className="text-xl font-medium mb-6">Summary</h2>
+
+                                <div className="space-y-4 mb-6">
+                                    <div className="flex justify-between text-base">
+                                        <span className="text-gray-900">Subtotal</span>
+                                        <span className="font-medium">${getCartTotal()}</span>
+                                    </div>
+                                    <div className="flex justify-between text-base">
+                                        <span className="text-gray-900">Estimated Delivery & Handling</span>
+                                        <span className="font-medium">Free</span>
+                                    </div>
+                                    <div className="border-t border-gray-100 pt-4 flex justify-between text-base font-medium">
+                                        <span>Total</span>
+                                        <span>${getCartTotal()}</span>
+                                    </div>
                                 </div>
-                                <div className="flex justify-between mb-4">
-                                    <span className="text-gray-600">Shipping</span>
-                                    <span>Free</span>
+
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={handleCheckout}
+                                        className="w-full bg-black text-white py-4 rounded-full font-medium hover:bg-gray-800 transition-transform active:scale-95"
+                                    >
+                                        Checkout
+                                    </button>
+                                    <button className="w-full bg-[#f5f5f5] text-black py-4 rounded-full font-medium hover:bg-gray-200 transition-colors">
+                                        PayPal
+                                    </button>
                                 </div>
-                                <div className="border-t border-gray-200 pt-4 flex justify-between font-bold text-lg mb-6">
-                                    <span>Total</span>
-                                    <span>${getCartTotal()}</span>
-                                </div>
-                                <button
-                                    onClick={handleCheckout}
-                                    className="w-full bg-black text-white py-3 font-medium hover:bg-gray-800 transition-colors"
-                                >
-                                    CHECKOUT
-                                </button>
                             </div>
                         </div>
                     </div>
