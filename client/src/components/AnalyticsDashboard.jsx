@@ -37,18 +37,18 @@ const AnalyticsDashboard = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-full mx-auto px-6 lg:px-12 pb-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                <div className="bg-black text-white p-8">
-                    <div className="flex items-center space-x-2 mb-4 text-gray-400">
+                <div className="bg-[#f5f5f5] p-8 transition-transform duration-300 hover:scale-[1.02]">
+                    <div className="flex items-center space-x-2 mb-4 text-gray-500">
                         <TrendingUp size={20} />
                         <span className="text-sm font-medium tracking-wider">TREND ALERT</span>
                     </div>
-                    <h3 className="text-4xl font-serif font-bold mb-2">{data.trendAlert}</h3>
-                    <p className="text-gray-400 text-sm">Most popular category this week</p>
+                    <h3 className="text-4xl font-medium mb-2">{data.trendAlert}</h3>
+                    <p className="text-gray-500 text-sm">Most popular category this week</p>
                 </div>
 
-                <div className="bg-gray-50 p-8 md:col-span-2">
+                <div className="bg-[#f5f5f5] p-8 md:col-span-2 transition-transform duration-300 hover:scale-[1.01]">
                     <div className="flex items-center space-x-2 mb-4 text-gray-500">
                         <Calendar size={20} />
                         <span className="text-sm font-medium tracking-wider">REVENUE FORECAST (NEXT 7 DAYS)</span>
@@ -72,8 +72,8 @@ const AnalyticsDashboard = () => {
                                     dx={-10}
                                 />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#000', border: 'none', color: '#fff' }}
-                                    itemStyle={{ color: '#fff' }}
+                                    contentStyle={{ backgroundColor: '#fff', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', color: '#000' }}
+                                    itemStyle={{ color: '#000' }}
                                     labelStyle={{ color: '#9CA3AF' }}
                                     formatter={(value) => [`$${value}`, 'Revenue']}
                                     labelFormatter={formatDate}

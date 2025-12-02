@@ -19,6 +19,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/stylesense'
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
 
 app.get('/', (req, res) => {
     res.send('StyleSense API is running');

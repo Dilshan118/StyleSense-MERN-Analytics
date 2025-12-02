@@ -2,9 +2,12 @@ import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, User, BarChart2, LogOut } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContext';
+import Logo from './Logo';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
+    const { getCartCount } = useContext(CartContext);
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -14,10 +17,10 @@ const Navbar = () => {
 
     return (
         <nav className="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
-                    <Link to="/" className="text-2xl font-serif font-bold tracking-tighter">
-                        STYLESENSE.
+            <div className="max-w-full mx-auto px-6 lg:px-12">
+                <div className="flex justify-between items-center h-24">
+                    <Link to="/" className="flex items-center">
+                        <Logo className="h-12 w-auto" />
                     </Link>
 
                     <div className="flex items-center space-x-8">
@@ -41,9 +44,14 @@ const Navbar = () => {
                                     <User size={20} />
                                 </Link>
                             )}
-                            <button className="hover:text-gray-600 transition-colors">
+                            <Link to="/cart" className="hover:text-gray-600 transition-colors relative">
                                 <ShoppingBag size={20} />
-                            </button>
+                                {getCartCount() > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-black text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                        {getCartCount()}
+                                    </span>
+                                )}
+                            </Link>
                         </div>
                     </div>
                 </div>
