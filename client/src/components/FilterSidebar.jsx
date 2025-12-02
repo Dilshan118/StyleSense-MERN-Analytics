@@ -48,7 +48,7 @@ const FilterSidebar = ({ filter, setFilter, isOpen, onClose }) => {
         `}>
             <div className="p-6 lg:p-0 h-full overflow-y-auto scrollbar-hide">
                 <div className="flex justify-between items-center mb-6 lg:hidden">
-                    <h2 className="text-xl font-bold font-serif">Filters</h2>
+                    <h2 className="text-xl font-bold">Filters</h2>
                     <button onClick={onClose}>
                         <X size={24} />
                     </button>

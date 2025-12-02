@@ -62,7 +62,7 @@ const ProductDetails = () => {
                     <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover lg:object-contain max-h-[80vh] mix-blend-multiply"
+                        className="w-full h-full object-cover lg:object-contain max-h-[80vh]"
                     />
                     {product.isTrending && (
                         <div className="absolute top-8 left-8 bg-white px-3 py-1 text-xs font-bold tracking-wider">
@@ -74,7 +74,7 @@ const ProductDetails = () => {
                 {/* Right: Details Section */}
                 <div className="lg:w-1/3 px-6 py-8 lg:px-12 lg:py-24 overflow-y-auto h-full">
                     <div className="max-w-md mx-auto lg:mx-0">
-                        <h1 className="text-3xl lg:text-4xl font-serif font-bold mb-2 tracking-tight">
+                        <h1 className="text-3xl lg:text-4xl font-bold mb-2 tracking-tight">
                             {product.name}
                         </h1>
                         <div className="flex justify-between items-start mb-6">

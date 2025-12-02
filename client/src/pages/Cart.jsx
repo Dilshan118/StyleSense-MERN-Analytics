@@ -47,8 +47,8 @@ const Cart = () => {
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
-            <div className="pt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-serif font-bold mb-8">YOUR CART</h1>
+            <div className="pt-32 max-w-full mx-auto px-6 lg:px-12">
+                <h1 className="text-3xl font-bold mb-8 tracking-tight">YOUR CART</h1>
 
                 {cart.length === 0 ? (
                     <div className="text-center py-12">
@@ -89,7 +89,7 @@ const Cart = () => {
                         </div>
 
                         <div className="lg:col-span-1">
-                            <div className="bg-gray-50 p-6 rounded-lg">
+                            <div className="bg-[#f5f5f5] p-8 rounded-xl">
                                 <h2 className="text-lg font-bold mb-4">ORDER SUMMARY</h2>
                                 <div className="flex justify-between mb-2">
                                     <span className="text-gray-600">Subtotal</span>
