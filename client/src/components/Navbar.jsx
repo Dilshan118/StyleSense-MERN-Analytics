@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, User, BarChart2, LogOut } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
-import logo from '../assets/logo.png';
+import Logo from './Logo';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -17,10 +17,10 @@ const Navbar = () => {
 
     return (
         <nav className="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-full mx-auto px-6 lg:px-12">
                 <div className="flex justify-between items-center h-24">
                     <Link to="/" className="flex items-center">
-                        <img src={logo} alt="StyleSense" className="h-20 w-auto object-contain" />
+                        <Logo className="h-12 w-auto" />
                     </Link>
 
                     <div className="flex items-center space-x-8">
