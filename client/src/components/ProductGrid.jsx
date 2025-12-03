@@ -18,7 +18,9 @@ const ProductGrid = () => {
         subCategory: '',
         minPrice: '',
         maxPrice: '',
-        sort: 'newest'
+        sort: 'newest',
+        sizes: [],
+        colors: []
     });
 
     useEffect(() => {
@@ -33,6 +35,8 @@ const ProductGrid = () => {
                 if (filter.minPrice) params.append('minPrice', filter.minPrice);
                 if (filter.maxPrice) params.append('maxPrice', filter.maxPrice);
                 if (filter.sort) params.append('sort', filter.sort);
+                if (filter.sizes && filter.sizes.length > 0) params.append('sizes', filter.sizes.join(','));
+                if (filter.colors && filter.colors.length > 0) params.append('colors', filter.colors.join(','));
 
                 if (params.toString()) url += `?${params.toString()}`;
 

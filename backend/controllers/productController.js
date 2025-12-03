@@ -19,6 +19,16 @@ exports.getProducts = async (req, res) => {
             if (maxPrice) query.price.$lte = Number(maxPrice);
         }
 
+        if (req.query.sizes) {
+            const sizes = req.query.sizes.split(',');
+            query.sizes = { $in: sizes };
+        }
+
+        if (req.query.colors) {
+            const colors = req.query.colors.split(',');
+            query.colors = { $in: colors };
+        }
+
         let productsQuery = Product.find(query);
 
         if (sort) {
