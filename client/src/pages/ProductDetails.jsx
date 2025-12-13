@@ -17,6 +17,7 @@ const ProductDetails = () => {
         const fetchProduct = async () => {
             try {
                 const response = await axios.get(`http://localhost:5001/api/products/${id}`);
+                console.log('Fetched Product Data:', response.data); // Debug log
                 setProduct(response.data);
                 // Default selections if available
                 if (response.data.sizes?.length > 0) setSelectedSize(response.data.sizes[0]);
@@ -60,7 +61,7 @@ const ProductDetails = () => {
                 {/* Left: Image Section */}
                 <div className="lg:w-2/3 bg-[#f5f5f5] relative flex items-center justify-center min-h-[50vh] lg:min-h-screen">
                     <img
-                        src={product.image}
+                        src={`http://localhost:5001${product.image}`}
                         alt={product.name}
                         className="w-full h-full object-cover lg:object-contain max-h-[80vh]"
                     />
@@ -166,8 +167,9 @@ const ProductDetails = () => {
                         {/* Description */}
                         <div className="prose prose-sm text-gray-600 mt-8">
                             <p>
-                                Experience premium comfort and style with the {product.name}.
-                                Designed for the modern individual, this piece combines timeless aesthetics with contemporary functionality.
+                                {product.description ? product.description : (
+                                    `Experience premium comfort and style with the ${product.name}. Designed for the modern individual, this piece combines timeless aesthetics with contemporary functionality.`
+                                )}
                             </p>
                             <ul className="list-disc pl-4 mt-4 space-y-1">
                                 <li>Premium materials</li>

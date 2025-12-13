@@ -150,7 +150,7 @@ const ProductGrid = () => {
                                             <Link to={`/product/${product._id}`}>
                                                 <div className="relative overflow-hidden bg-[#f5f5f5] aspect-[4/5] mb-4">
                                                     <img
-                                                        src={product.image}
+                                                        src={`http://localhost:5001${product.image}`}
                                                         alt={product.name}
                                                         className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
                                                     />
