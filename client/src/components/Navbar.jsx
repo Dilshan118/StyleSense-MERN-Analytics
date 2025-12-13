@@ -34,7 +34,10 @@ const Navbar = () => {
                         <div className="flex items-center space-x-4">
                             {user ? (
                                 <>
-                                    <span className="text-sm font-medium hidden md:block">Hi, {user.name.split(' ')[0]}</span>
+                                    <Link to="/profile" className="text-sm font-medium hover:text-gray-600 transition-colors flex items-center gap-1">
+                                        <User size={18} />
+                                        <span className="hidden md:inline">{user.name.split(' ')[0]}</span>
+                                    </Link>
                                     <button onClick={handleLogout} className="hover:text-gray-600 transition-colors" title="Logout">
                                         <LogOut size={20} />
                                     </button>
