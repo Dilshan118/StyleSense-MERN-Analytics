@@ -143,7 +143,7 @@ const ProductList = () => {
                                         </span>
                                         <span className="ml-2 text-xs text-gray-400">{product.subCategory}</span>
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900">${product.price}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">LKR {product.price}</td>
                                     <td className="px-6 py-4 text-gray-600">{product.stock}</td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">

@@ -75,7 +75,7 @@ const AnalyticsDashboard = () => {
                                     contentStyle={{ backgroundColor: '#fff', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', color: '#000' }}
                                     itemStyle={{ color: '#000' }}
                                     labelStyle={{ color: '#9CA3AF' }}
-                                    formatter={(value) => [`$${value}`, 'Revenue']}
+                                    formatter={(value) => [`LKR ${value}`, 'Revenue']}
                                     labelFormatter={formatDate}
                                 />
                                 <Line

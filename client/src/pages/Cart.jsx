@@ -92,7 +92,7 @@ const Cart = () => {
                                                     <p>Quantity <span className="text-gray-900">{item.quantity}</span></p>
                                                 </div>
                                             </div>
-                                            <p className="font-medium text-base">${item.price * item.quantity}</p>
+                                            <p className="font-medium text-base">LKR {item.price * item.quantity}</p>
                                         </div>
 
                                         {/* Actions */}
@@ -128,16 +128,14 @@ const Cart = () => {
                                     </div>
                                     <div className="border-t border-gray-100 pt-4 flex justify-between text-base font-medium">
                                         <span>Total</span>
-                                        <span>${getCartTotal()}</span>
+                                        <span className="font-medium">LKR {getCartTotal()}</span>
                                     </div>
-                                </div>
-
-                                <div className="space-y-3">
+                                    <p className="text-gray-500 text-xs mt-1">Shipping & taxes calculated at checkout</p>
                                     <button
-                                        onClick={handleCheckout}
-                                        className="w-full bg-black text-white py-4 rounded-full font-medium hover:bg-gray-800 transition-transform active:scale-95"
+                                        onClick={() => alert('Checkout functionality coming soon!')}
+                                        className="w-full bg-black text-white py-4 rounded-full font-bold mt-6 hover:bg-gray-800 transition-colors"
                                     >
-                                        Checkout
+                                        Checkout • LKR {getCartTotal()}
                                     </button>
                                     <button className="w-full bg-[#f5f5f5] text-black py-4 rounded-full font-medium hover:bg-gray-200 transition-colors">
                                         PayPal

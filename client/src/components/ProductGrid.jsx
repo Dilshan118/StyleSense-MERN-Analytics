@@ -166,7 +166,7 @@ const ProductGrid = () => {
                                                 </div>
                                             </Link>
                                             <div className="flex justify-between items-center mt-3">
-                                                <p className="text-base font-medium text-gray-900">${product.price}</p>
+                                                <p className="text-base font-medium text-gray-900">LKR {product.price}</p>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();

@@ -152,25 +152,25 @@ const FilterSidebar = ({ filter, setFilter, isOpen, onClose }) => {
                         <div className="space-y-4">
                             <div className="flex items-center space-x-2">
                                 <div className="relative flex-1">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                                     <input
                                         type="number"
-                                        placeholder="0"
-                                        value={filter.minPrice || ''}
+                                        placeholder="Min"
+                                        value={filter.minPrice}
                                         onChange={(e) => setFilter({ ...filter, minPrice: e.target.value })}
-                                        className="w-full pl-6 pr-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-black focus:border-black"
+                                        className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:border-black focus:ring-black"
                                     />
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">LKR</span>
                                 </div>
                                 <span className="text-gray-400">to</span>
                                 <div className="relative flex-1">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                                     <input
                                         type="number"
                                         placeholder="Max"
-                                        value={filter.maxPrice || ''}
+                                        value={filter.maxPrice}
                                         onChange={(e) => setFilter({ ...filter, maxPrice: e.target.value })}
-                                        className="w-full pl-6 pr-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-black focus:border-black"
+                                        className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:border-black focus:ring-black"
                                     />
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">LKR</span>
                                 </div>
                             </div>
                         </div>

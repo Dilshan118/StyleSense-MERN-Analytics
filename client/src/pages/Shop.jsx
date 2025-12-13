@@ -59,7 +59,7 @@ const Shop = () => {
                                 </h3>
                                 <div className="flex items-center justify-between mt-1">
                                     <p className="text-sm text-gray-500">{product.category}</p>
-                                    <p className="text-sm font-medium text-gray-900">${product.price}</p>
+                                    <p className="text-sm font-medium text-gray-900">LKR {product.price}</p>
                                 </div>
                             </Link>
                         ))}

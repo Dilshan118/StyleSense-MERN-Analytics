@@ -83,7 +83,7 @@ const ProductDetails = () => {
                                 <p className="text-gray-500 font-medium">{product.category}</p>
                                 <p className="text-gray-400 text-sm">{product.subCategory}</p>
                             </div>
-                            <p className="text-xl font-medium">${product.price}</p>
+                            <p className="text-xl font-medium">LKR {product.price}</p>
                         </div>
 
                         {/* Size Selector */}
