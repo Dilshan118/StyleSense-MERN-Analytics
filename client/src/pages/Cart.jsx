@@ -74,9 +74,10 @@ const Cart = () => {
                                     {/* Product Image */}
                                     <div className="w-36 h-36 bg-[#f5f5f5] flex-shrink-0">
                                         <img
-                                            src={`http://localhost:5001${item.image}`}
+                                            src={item.image ? (item.image.startsWith('http') ? item.image : `http://localhost:5001${item.image.startsWith('/') ? '' : '/'}${item.image}`) : '/placeholder.png'}
                                             alt={item.name}
                                             className="w-full h-full object-cover mix-blend-multiply"
+                                            onError={(e) => { e.target.src = '/placeholder.png'; }}
                                         />
                                     </div>
 
@@ -92,7 +93,10 @@ const Cart = () => {
                                                     <p>Quantity <span className="text-gray-900">{item.quantity}</span></p>
                                                 </div>
                                             </div>
-                                            <p className="font-medium text-base">LKR {item.price * item.quantity}</p>
+                                            <div className="text-right">
+                                                <p className="font-medium text-base">LKR {(item.price * item.quantity).toLocaleString()}</p>
+                                                <p className="text-xs text-gray-500">{item.quantity} x LKR {item.price.toLocaleString()}</p>
+                                            </div>
                                         </div>
 
                                         {/* Actions */}

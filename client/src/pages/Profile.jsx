@@ -107,8 +107,8 @@ const Profile = () => {
                                     key={item.id}
                                     onClick={() => setActiveTab(item.id)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${activeTab === item.id
-                                            ? 'bg-black text-white shadow-md shadow-black/10'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        ? 'bg-black text-white shadow-md shadow-black/10'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                 >
                                     <item.icon size={18} />
@@ -339,7 +339,9 @@ const OrderHistory = () => {
                                     <div className="flex items-center gap-3">
                                         <span className="text-sm font-bold text-gray-900">#{order._id.slice(-8).toUpperCase()}</span>
                                         <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                        <span className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</span>
+                                        <span className="text-sm text-gray-500">
+                                            Payment Date: {new Date(order.date).toLocaleDateString()}
+                                        </span>
                                     </div>
                                     <p className="text-xs text-gray-400 font-mono hidden sm:block">ID: {order._id}</p>
                                 </div>
@@ -348,6 +350,14 @@ const OrderHistory = () => {
                                     <span className="text-lg font-bold text-gray-900">LKR {order.total.toLocaleString()}</span>
                                 </div>
                             </div>
+
+                            {order.status === 'Cancelled' && order.cancellationReason && (
+                                <div className="mt-3 bg-red-50 p-3 rounded-lg border border-red-100">
+                                    <p className="text-sm text-red-700">
+                                        <span className="font-bold">Cancellation Reason:</span> {order.cancellationReason}
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
                                 {order.items.map((item, index) => (
@@ -358,18 +368,22 @@ const OrderHistory = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-medium text-gray-900">{item.product?.name || 'Product Item'}</p>
-                                                <p className="text-xs text-gray-500">Size: {item.size} • Color: {item.color} • Qty: {item.quantity}</p>
+                                                <p className="text-xs text-gray-500">Size: {item.size} • Color: {item.color}</p>
                                             </div>
                                         </div>
-                                        <span className="text-sm font-medium text-gray-700">LKR {(item.price * item.quantity).toLocaleString()}</span>
+                                        <div className="text-right">
+                                            <p className="text-sm font-medium text-gray-900">LKR {(item.price * item.quantity).toLocaleString()}</p>
+                                            <p className="text-xs text-gray-500">{item.quantity} x LKR {item.price.toLocaleString()}</p>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    ))}
-                </div>
+                    ))
+                    }
+                </div >
             )}
-        </div>
+        </div >
     );
 };
 

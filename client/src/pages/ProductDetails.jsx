@@ -12,6 +12,7 @@ const ProductDetails = () => {
     const [loading, setLoading] = useState(true);
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
+    const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -37,9 +38,17 @@ const ProductDetails = () => {
             alert('Please select a size and color');
             return;
         }
-        addToCart(product, selectedSize, selectedColor);
+        addToCart(product, selectedSize, selectedColor, quantity);
         // Optional: Open cart drawer or show notification
         alert('Added to Bag');
+    };
+
+    const handleQuantityChange = (type) => {
+        if (type === 'increment') {
+            setQuantity(prev => prev + 1);
+        } else if (type === 'decrement' && quantity > 1) {
+            setQuantity(prev => prev - 1);
+        }
     };
 
     if (loading) {
@@ -125,7 +134,7 @@ const ProductDetails = () => {
                         </div>
 
                         {/* Color Selector */}
-                        <div className="mb-10">
+                        <div className="mb-8">
                             <span className="font-medium text-sm block mb-3">Select Color</span>
                             <div className="flex space-x-3">
                                 {product.colors && product.colors.length > 0 ? (
@@ -153,6 +162,28 @@ const ProductDetails = () => {
                                         <div className="h-6 w-6 rounded-full bg-black"></div>
                                     </button>
                                 )}
+                            </div>
+                        </div>
+
+                        {/* Quantity Selector */}
+                        <div className="mb-10">
+                            <span className="font-medium text-sm block mb-3">Quantity</span>
+                            <div className="flex items-center border border-gray-200 rounded-md w-32">
+                                <button
+                                    onClick={() => handleQuantityChange('decrement')}
+                                    className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50 rounded-l-md transition-colors"
+                                >
+                                    -
+                                </button>
+                                <div className="flex-1 h-10 flex items-center justify-center font-medium text-gray-900 border-x border-gray-200">
+                                    {quantity}
+                                </div>
+                                <button
+                                    onClick={() => handleQuantityChange('increment')}
+                                    className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50 rounded-r-md transition-colors"
+                                >
+                                    +
+                                </button>
                             </div>
                         </div>
 

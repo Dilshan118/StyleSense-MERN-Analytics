@@ -12,7 +12,7 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
-    const addToCart = (product, size = 'M', color = 'Black') => {
+    const addToCart = (product, size = 'M', color = 'Black', quantity = 1) => {
         setCart((prevCart) => {
             const existingItem = prevCart.find(
                 (item) => item._id === product._id && item.size === size && item.color === color
@@ -21,11 +21,11 @@ export const CartProvider = ({ children }) => {
             if (existingItem) {
                 return prevCart.map((item) =>
                     item._id === product._id && item.size === size && item.color === color
-                        ? { ...item, quantity: item.quantity + 1 }
+                        ? { ...item, quantity: item.quantity + quantity }
                         : item
                 );
             } else {
-                return [...prevCart, { ...product, size, color, quantity: 1 }];
+                return [...prevCart, { ...product, size, color, quantity }];
             }
         });
     };

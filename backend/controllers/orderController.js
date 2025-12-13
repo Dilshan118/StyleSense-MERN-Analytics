@@ -3,7 +3,7 @@ const Order = require('../models/Order');
 exports.createOrder = async (req, res) => {
     try {
         console.log('Creating order with body:', req.body); // LOG
-        const { items, total } = req.body;
+        const { items, total, shippingAddress } = req.body;
 
         if (!items || items.length === 0) {
             return res.status(400).json({ message: 'No items in order' });
@@ -13,6 +13,7 @@ exports.createOrder = async (req, res) => {
             user: req.user._id, // From auth middleware
             items,
             total,
+            shippingAddress,
         });
 
         const createdOrder = await order.save();
@@ -44,7 +45,7 @@ exports.getAllOrders = async (req, res) => {
 
 exports.updateOrderStatus = async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status, cancellationReason } = req.body;
         const order = await Order.findById(req.params.id);
 
         if (order) {
@@ -52,6 +53,9 @@ exports.updateOrderStatus = async (req, res) => {
             order.isDelivered = status === 'Delivered';
             if (status === 'Delivered') {
                 order.deliveredAt = Date.now();
+            }
+            if (status === 'Cancelled' && cancellationReason) {
+                order.cancellationReason = cancellationReason;
             }
 
             const updatedOrder = await order.save();
