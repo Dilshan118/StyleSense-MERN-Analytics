@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, ArrowLeft } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -11,10 +11,47 @@ const Cart = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
+    const [postalCode, setPostalCode] = useState('');
+    const [country, setCountry] = useState('');
+
+    const [useNewAddress, setUseNewAddress] = useState(false);
+    const hasDefaultAddress = user?.shippingAddress && user.shippingAddress.address;
+
+    React.useEffect(() => {
+        // If we have a default address, don't auto-fill the form state immediately
+        // allowing the "useNewAddress" toggle to control visibility.
+        // But if NO default address, we might want to ensure the form is ready or empty.
+        if (!hasDefaultAddress) {
+            setUseNewAddress(true);
+        }
+    }, [user, hasDefaultAddress]);
+
     const handleCheckout = async () => {
         if (!user) {
             navigate('/login');
             return;
+        }
+
+        // Determine which address to use
+        let finalShippingAddress = null;
+
+        if (useNewAddress) {
+            // Validate form input
+            if (!address || !city || !postalCode || !country) {
+                alert('Please fill in all shipping details.');
+                return;
+            }
+            finalShippingAddress = { address, city, postalCode, country };
+        } else {
+            // Use default
+            if (!hasDefaultAddress) {
+                alert('No default shipping address found. Please enter one.');
+                setUseNewAddress(true);
+                return;
+            }
+            finalShippingAddress = user.shippingAddress;
         }
 
         try {
@@ -26,7 +63,8 @@ const Cart = () => {
                     color: item.color,
                     price: item.price
                 })),
-                total: getCartTotal()
+                total: getCartTotal(),
+                shippingAddress: finalShippingAddress
             };
 
             await axios.post('http://localhost:5001/api/orders', orderData, {
@@ -43,6 +81,82 @@ const Cart = () => {
             alert(error.response?.data?.message || 'Failed to place order. Please try again.');
         }
     };
+
+    // ... (rest of render until shipping section) ...
+
+    {/* Shipping Details */ }
+    <div className="border-t border-gray-100 pt-8">
+        <h2 className="text-xl font-medium mb-6">Shipping Information</h2>
+
+        {hasDefaultAddress && (
+            <div className="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div className="flex items-start justify-between mb-4">
+                    <div>
+                        <h3 className="font-semibold text-gray-900">Default Delivery Address</h3>
+                        <p className="text-sm text-gray-600 mt-1">{user.shippingAddress.address}</p>
+                        <p className="text-sm text-gray-600">{user.shippingAddress.city}, {user.shippingAddress.postalCode}</p>
+                        <p className="text-sm text-gray-600">{user.shippingAddress.country}</p>
+                    </div>
+                    <div className="bg-black text-white text-xs px-2 py-1 rounded">Default</div>
+                </div>
+
+                <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-indigo-600 hover:text-indigo-800">
+                    <input
+                        type="checkbox"
+                        checked={useNewAddress}
+                        onChange={(e) => setUseNewAddress(e.target.checked)}
+                        className="rounded border-gray-300 text-black focus:ring-black"
+                    />
+                    Ship to a different address
+                </label>
+            </div>
+        )}
+
+        {(useNewAddress || !hasDefaultAddress) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+                <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Address</label>
+                    <input
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Street Address"
+                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
+                    />
+                </div>
+                <div>
+                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">City</label>
+                    <input
+                        type="text"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="City"
+                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
+                    />
+                </div>
+                <div>
+                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Postal Code</label>
+                    <input
+                        type="text"
+                        value={postalCode}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                        placeholder="ZIP Code"
+                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
+                    />
+                </div>
+                <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Country</label>
+                    <input
+                        type="text"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        placeholder="Country"
+                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
+                    />
+                </div>
+            </div>
+        )}
+    </div>
 
     return (
         <div className="min-h-screen bg-white">
@@ -114,6 +228,53 @@ const Cart = () => {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+
+                        {/* Shipping Details */}
+                        <div className="border-t border-gray-100 pt-8">
+                            <h2 className="text-xl font-medium mb-6">Shipping Information</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Address</label>
+                                    <input
+                                        type="text"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        placeholder="Street Address"
+                                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">City</label>
+                                    <input
+                                        type="text"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
+                                        placeholder="City"
+                                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Postal Code</label>
+                                    <input
+                                        type="text"
+                                        value={postalCode}
+                                        onChange={(e) => setPostalCode(e.target.value)}
+                                        placeholder="ZIP Code"
+                                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Country</label>
+                                    <input
+                                        type="text"
+                                        value={country}
+                                        onChange={(e) => setCountry(e.target.value)}
+                                        placeholder="Country"
+                                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         {/* Right: Summary */}

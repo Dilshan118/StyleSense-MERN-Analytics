@@ -241,6 +241,19 @@ const OrderList = () => {
                                 </div>
                             </div>
 
+                            {selectedOrder.shippingAddress && (
+                                <div className="mb-8">
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Shipping Details</h3>
+                                    <div className="bg-gray-50 p-4 rounded-lg text-sm border border-gray-100">
+                                        <div className="font-medium text-gray-900">{selectedOrder.shippingAddress.address}</div>
+                                        <div className="text-gray-600">
+                                            {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.postalCode}
+                                        </div>
+                                        <div className="text-gray-600">{selectedOrder.shippingAddress.country}</div>
+                                    </div>
+                                </div>
+                            )}
+
                             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Items ({selectedOrder.items.length})</h3>
                             <div className="space-y-4">
                                 {selectedOrder.items.map((item, index) => (
