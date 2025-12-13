@@ -220,10 +220,125 @@ const Profile = () => {
                                 </div>
                             </form>
                         </section>
+
+                        {/* Order History Section */}
+                        <OrderHistory />
                     </div>
                 </div>
             </div>
         </div>
+    );
+};
+
+import axios from 'axios';
+import { ShoppingBag, Clock, Package, CheckCircle, XCircle } from 'lucide-react';
+
+const OrderHistory = () => {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { user } = useContext(AuthContext);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`
+                    }
+                };
+                const { data } = await axios.get('http://localhost:5001/api/orders/myorders', config);
+                setOrders(data);
+            } catch (error) {
+                console.error('Error fetching my orders:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (user && user.token) {
+            fetchOrders();
+        }
+    }, [user]);
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Delivered': return 'bg-green-100 text-green-700 border-green-200';
+            case 'Shipped': return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 'Processing': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+            case 'Cancelled': return 'bg-red-100 text-red-700 border-red-200';
+            default: return 'bg-gray-100 text-gray-700 border-gray-200';
+        }
+    };
+
+    const getStatusIcon = (status) => {
+        switch (status) {
+            case 'Delivered': return <CheckCircle size={14} className="mr-1.5" />;
+            case 'Shipped': return <Package size={14} className="mr-1.5" />;
+            case 'Processing': return <Clock size={14} className="mr-1.5" />;
+            case 'Cancelled': return <XCircle size={14} className="mr-1.5" />;
+            default: return <Clock size={14} className="mr-1.5" />;
+        }
+    };
+
+    if (loading) return null;
+
+    return (
+        <section className="bg-white rounded-3xl p-8 shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-6 opacity-5">
+                <ShoppingBag size={120} />
+            </div>
+
+            <div className="mb-8 relative">
+                <h2 className="text-2xl font-serif font-medium text-gray-900">Order History</h2>
+                <p className="text-gray-500 text-sm mt-1">Track your recent purchases</p>
+            </div>
+
+            <div className="relative space-y-4">
+                {orders.length === 0 ? (
+                    <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                        <ShoppingBag className="mx-auto text-gray-300 mb-2" size={32} />
+                        <p className="text-gray-500 text-sm">No orders yet</p>
+                    </div>
+                ) : (
+                    orders.map((order) => (
+                        <div key={order._id} className="p-5 border border-gray-100 rounded-2xl bg-gray-50/50 hover:bg-white hover:shadow-sm transition-all duration-200">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                                <div>
+                                    <p className="text-xs text-gray-400 font-mono mb-1">#{order._id.slice(-6).toUpperCase()}</p>
+                                    <p className="text-sm font-medium text-gray-900">
+                                        {new Date(order.createdAt).toLocaleDateString()}
+                                    </p>
+                                </div>
+                                <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                                    {getStatusIcon(order.status)}
+                                    {order.status}
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                {order.items.map((item, index) => (
+                                    <div key={index} className="flex items-center justify-between text-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
+                                            <span className="text-gray-600">
+                                                <span className="text-gray-900 font-medium">{item.quantity}x</span> {item.product?.name || 'Product'}
+                                                <span className="text-gray-400 ml-1">({item.size}, {item.color})</span>
+                                            </span>
+                                        </div>
+                                        <span className="font-medium text-gray-900">LKR {item.price * item.quantity}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <span className="text-sm font-medium text-gray-500">Total Amount</span>
+                                <span className="text-base font-bold text-gray-900">LKR {order.total}</span>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+        </section>
     );
 };
 

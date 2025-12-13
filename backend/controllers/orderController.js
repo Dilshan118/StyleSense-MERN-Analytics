@@ -10,7 +10,7 @@ exports.createOrder = async (req, res) => {
         }
 
         const order = new Order({
-            user: req.user.id, // From auth middleware
+            user: req.user._id, // From auth middleware
             items,
             total,
         });
@@ -60,6 +60,18 @@ exports.updateOrderStatus = async (req, res) => {
             res.status(404).json({ message: 'Order not found' });
         }
     } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getMyOrders = async (req, res) => {
+    try {
+        console.log('Fetching orders for user:', req.user._id); // LOG
+        const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+        console.log(`Found ${orders.length} orders for user ${req.user._id}`); // LOG
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching my orders:', error); // LOG
         res.status(500).json({ message: error.message });
     }
 };
