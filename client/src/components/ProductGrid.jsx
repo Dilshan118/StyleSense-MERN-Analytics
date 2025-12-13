@@ -18,7 +18,9 @@ const ProductGrid = () => {
         subCategory: '',
         minPrice: '',
         maxPrice: '',
-        sort: 'newest'
+        sort: 'newest',
+        sizes: [],
+        colors: []
     });
 
     useEffect(() => {
@@ -33,6 +35,8 @@ const ProductGrid = () => {
                 if (filter.minPrice) params.append('minPrice', filter.minPrice);
                 if (filter.maxPrice) params.append('maxPrice', filter.maxPrice);
                 if (filter.sort) params.append('sort', filter.sort);
+                if (filter.sizes && filter.sizes.length > 0) params.append('sizes', filter.sizes.join(','));
+                if (filter.colors && filter.colors.length > 0) params.append('colors', filter.colors.join(','));
 
                 if (params.toString()) url += `?${params.toString()}`;
 
@@ -146,7 +150,7 @@ const ProductGrid = () => {
                                             <Link to={`/product/${product._id}`}>
                                                 <div className="relative overflow-hidden bg-[#f5f5f5] aspect-[4/5] mb-4">
                                                     <img
-                                                        src={product.image}
+                                                        src={`http://localhost:5001${product.image}`}
                                                         alt={product.name}
                                                         className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
                                                     />
@@ -162,7 +166,7 @@ const ProductGrid = () => {
                                                 </div>
                                             </Link>
                                             <div className="flex justify-between items-center mt-3">
-                                                <p className="text-base font-medium text-gray-900">${product.price}</p>
+                                                <p className="text-base font-medium text-gray-900">LKR {product.price}</p>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();

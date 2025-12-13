@@ -25,6 +25,10 @@ app.get('/', (req, res) => {
     res.send('StyleSense API is running');
 });
 
+// Make uploads folder static
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

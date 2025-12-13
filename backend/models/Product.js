@@ -19,6 +19,10 @@ const productSchema = new mongoose.Schema({
         enum: ['T-Shirts', 'Jeans', 'Jackets', 'Dresses'],
         required: true,
     },
+    description: {
+        type: String,
+        required: true,
+    },
     sizes: [{
         type: String,
     }],

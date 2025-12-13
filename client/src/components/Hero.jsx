@@ -1,25 +1,38 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import HeroImage from '../assets/hero-bg.png';
 
 const Hero = () => {
+    const navigate = useNavigate();
+
+    const handleShopClick = (category) => {
+        navigate(`/shop?category=${category}`);
+    };
+
     return (
-        <div className="relative h-[70vh] w-full bg-gray-50 flex items-center justify-center overflow-hidden">
+        <div className="relative h-[90vh] w-full bg-black flex items-center justify-center overflow-hidden">
+            {/* Background Image with Gradient Overlay */}
             <div className="absolute inset-0 z-0">
                 <img
-                    src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070&auto=format&fit=crop"
+                    src={HeroImage}
                     alt="Fashion Hero"
-                    className="w-full h-full object-cover grayscale opacity-20"
+                    className="w-full h-full object-cover opacity-90 scale-105 animate-subtle-zoom"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
             </div>
-            <div className="relative z-10 text-center space-y-6 max-w-3xl px-4">
-                <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
-                    ELEVATE YOUR STYLE
+
+            {/* Content */}
+            <div className="relative z-10 text-center space-y-10 max-w-5xl px-6 animate-fade-in-up">
+                <span className="inline-block text-white/90 text-xs md:text-sm tracking-[0.3em] uppercase font-bold border-b border-white/30 pb-2 cursor-default">
+                    Est. 2024 Collection
+                </span>
+                <h1 className="text-7xl md:text-9xl font-serif text-white font-medium tracking-tighter drop-shadow-2xl leading-[0.9]">
+                    <span className="block">ELEGANCE</span>
+                    <span className="block italic font-light text-white/90">REDEFINED</span>
                 </h1>
-                <p className="text-lg md:text-xl text-gray-600 font-light tracking-wide">
-                    CURATED FASHION FOR THE MODERN INDIVIDUAL
+                <p className="text-lg md:text-xl text-gray-300 font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
+                    A curated selection of premium apparel designed for the modern individual.
                 </p>
-                <button className="bg-black text-white px-8 py-3 text-sm font-medium tracking-widest hover:bg-gray-800 transition-colors">
-                    EXPLORE COLLECTION
-                </button>
+                {/* Buttons removed as per request */}
             </div>
         </div>
     );

@@ -23,8 +23,10 @@ const FilterSection = ({ title, children, defaultOpen = false }) => {
 };
 
 const FilterSidebar = ({ filter, setFilter, isOpen, onClose }) => {
-    const categories = ['Men', 'Women'];
+    const categories = ['Men', 'Women', 'Kids'];
     const subCategories = ['T-Shirts', 'Jeans', 'Jackets', 'Dresses'];
+    const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    const colors = ['White', 'Black', 'Grey', 'Blue', 'Red', 'Pink', 'Yellow', 'Green'];
 
     const handleCategoryChange = (category) => {
         setFilter(prev => ({
@@ -38,6 +40,26 @@ const FilterSidebar = ({ filter, setFilter, isOpen, onClose }) => {
             ...prev,
             subCategory: prev.subCategory === subCategory ? '' : subCategory
         }));
+    };
+
+    const handleSizeChange = (size) => {
+        setFilter(prev => {
+            const currentSizes = prev.sizes || [];
+            const newSizes = currentSizes.includes(size)
+                ? currentSizes.filter(s => s !== size)
+                : [...currentSizes, size];
+            return { ...prev, sizes: newSizes };
+        });
+    };
+
+    const handleColorChange = (color) => {
+        setFilter(prev => {
+            const currentColors = prev.colors || [];
+            const newColors = currentColors.includes(color)
+                ? currentColors.filter(c => c !== color)
+                : [...currentColors, color];
+            return { ...prev, colors: newColors };
+        });
     };
 
     return (
@@ -85,30 +107,70 @@ const FilterSidebar = ({ filter, setFilter, isOpen, onClose }) => {
                         ))}
                     </FilterSection>
 
+                    {/* Size Section */}
+                    <FilterSection title="Size" defaultOpen={true}>
+                        <div className="grid grid-cols-3 gap-2">
+                            {sizes.map((size) => (
+                                <button
+                                    key={size}
+                                    onClick={() => handleSizeChange(size)}
+                                    className={`
+                                        py-2 text-sm border rounded-md transition-all
+                                        ${(filter.sizes || []).includes(size)
+                                            ? 'border-black bg-black text-white'
+                                            : 'border-gray-200 text-gray-600 hover:border-gray-300'}
+                                    `}
+                                >
+                                    {size}
+                                </button>
+                            ))}
+                        </div>
+                    </FilterSection>
+
+                    {/* Color Section */}
+                    <FilterSection title="Color" defaultOpen={true}>
+                        <div className="flex flex-wrap gap-2">
+                            {colors.map((color) => (
+                                <button
+                                    key={color}
+                                    onClick={() => handleColorChange(color)}
+                                    className={`
+                                        w-8 h-8 rounded-full border transition-all relative
+                                        ${(filter.colors || []).includes(color) ? 'ring-2 ring-offset-2 ring-black' : 'hover:scale-110'}
+                                    `}
+                                    style={{ backgroundColor: color.toLowerCase() }}
+                                    title={color}
+                                >
+                                    {color === 'White' && <span className="sr-only">White</span>}
+                                </button>
+                            ))}
+                        </div>
+                    </FilterSection>
+
                     {/* Price Range Section */}
                     <FilterSection title="Shop By Price" defaultOpen={true}>
                         <div className="space-y-4">
                             <div className="flex items-center space-x-2">
                                 <div className="relative flex-1">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                                     <input
                                         type="number"
-                                        placeholder="0"
-                                        value={filter.minPrice || ''}
+                                        placeholder="Min"
+                                        value={filter.minPrice}
                                         onChange={(e) => setFilter({ ...filter, minPrice: e.target.value })}
-                                        className="w-full pl-6 pr-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-black focus:border-black"
+                                        className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:border-black focus:ring-black"
                                     />
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">LKR</span>
                                 </div>
                                 <span className="text-gray-400">to</span>
                                 <div className="relative flex-1">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                                     <input
                                         type="number"
                                         placeholder="Max"
-                                        value={filter.maxPrice || ''}
+                                        value={filter.maxPrice}
                                         onChange={(e) => setFilter({ ...filter, maxPrice: e.target.value })}
-                                        className="w-full pl-6 pr-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-black focus:border-black"
+                                        className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:border-black focus:ring-black"
                                     />
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">LKR</span>
                                 </div>
                             </div>
                         </div>

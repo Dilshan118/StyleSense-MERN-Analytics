@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import AnalyticsDashboard from '../components/AnalyticsDashboard';
+import { AuthContext } from '../context/AuthContext';
 
 const Analytics = () => {
+    const { user, loading } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!loading) {
+            if (!user || user.role !== 'admin') {
+                navigate('/');
+            }
+        }
+    }, [user, loading, navigate]);
+
+    if (loading) return null; // or a spinner
+    if (!user || user.role !== 'admin') return null;
+
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
