@@ -1,5 +1,6 @@
 const DailySales = require('../models/DailySales');
 const ss = require('simple-statistics');
+const Product = require('../models/Product');
 
 exports.getPredictions = async (req, res) => {
     try {
@@ -64,9 +65,39 @@ exports.getPredictions = async (req, res) => {
             }
         }
 
+        // --- NEW: Inventory Intelligence (Stockout Risk) ---
+        const products = await Product.find({});
+        const stockRisks = [];
+
+        products.forEach(product => {
+            // Logic: Predict weekly sales based on popularity tokens
+            // Base daily sales assumption: 0.5 to 2 items
+            let dailySalesRate = 0.5;
+
+            // Boost if trending
+            if (product.isTrending) dailySalesRate += 1.5;
+
+            // Boost if category matches trend
+            if (trendAlert !== 'N/A' && product.subCategory === trendAlert) dailySalesRate += 2;
+
+            const predictedWeeklySales = Math.ceil(dailySalesRate * 7);
+
+            if (predictedWeeklySales > product.stock) {
+                stockRisks.push({
+                    id: product._id,
+                    name: product.name,
+                    image: product.image,
+                    stock: product.stock,
+                    predictedSales: predictedWeeklySales,
+                    shortage: predictedWeeklySales - product.stock
+                });
+            }
+        });
+
         res.json({
             predictions,
             trendAlert,
+            stockRisks // Sending the new data
         });
 
     } catch (error) {

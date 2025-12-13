@@ -1,10 +1,24 @@
-import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { LayoutDashboard, Package, Users, Settings } from 'lucide-react';
+import { AuthContext } from '../../context/AuthContext';
 
 const AdminDashboard = () => {
+    const { user, loading } = useContext(AuthContext);
+    const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        if (!loading) {
+            if (!user || user.role !== 'admin') {
+                navigate('/');
+            }
+        }
+    }, [user, loading, navigate]);
+
+    if (loading) return null;
+    if (!user || user.role !== 'admin') return null;
 
     const isActive = (path) => {
         return location.pathname === path ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-100';
@@ -35,6 +49,13 @@ const AdminDashboard = () => {
                             >
                                 <Users size={20} />
                                 Users
+                            </Link>
+                            <Link
+                                to="/admin/orders"
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${isActive('/admin/orders')}`}
+                            >
+                                <LayoutDashboard size={20} />
+                                Orders
                             </Link>
                         </nav>
                     </div>

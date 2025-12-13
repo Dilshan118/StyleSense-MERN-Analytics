@@ -32,10 +32,12 @@ const Navbar = () => {
                         <Link to="/" className="text-sm font-medium hover:text-gray-600 transition-colors">
                             SHOP
                         </Link>
-                        <Link to="/analytics" className="text-sm font-medium hover:text-gray-600 transition-colors flex items-center gap-2">
-                            <BarChart2 size={16} />
-                            ANALYTICS
-                        </Link>
+                        {user?.role === 'admin' && (
+                            <Link to="/analytics" className="text-sm font-medium hover:text-gray-600 transition-colors flex items-center gap-2">
+                                <BarChart2 size={16} />
+                                ANALYTICS
+                            </Link>
+                        )}
                         <div className="flex items-center space-x-4">
                             {user ? (
                                 <>

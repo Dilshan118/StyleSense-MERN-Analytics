@@ -13,6 +13,8 @@ import Profile from './pages/Profile';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProductList from './pages/admin/ProductList';
 import ProductForm from './pages/admin/ProductForm';
+import UserList from './pages/admin/UserList';
+import OrderList from './pages/admin/OrderList';
 import Shop from './pages/Shop'; // Added based on the route in the provided Code Edit
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/analytics" element={<Analytics />} />
 
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />}>
@@ -36,6 +39,8 @@ function App() {
                 <Route path="products" element={<ProductList />} />
                 <Route path="products/new" element={<ProductForm />} />
                 <Route path="products/edit/:id" element={<ProductForm />} />
+                <Route path="users" element={<UserList />} />
+                <Route path="orders" element={<OrderList />} />
               </Route>
 
             </Routes>

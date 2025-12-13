@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Calendar } from 'lucide-react';
 
 const AnalyticsDashboard = () => {
@@ -53,43 +52,46 @@ const AnalyticsDashboard = () => {
                         <Calendar size={20} />
                         <span className="text-sm font-medium tracking-wider">REVENUE FORECAST (NEXT 7 DAYS)</span>
                     </div>
-                    <div className="h-64 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={data.predictions}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                <XAxis
-                                    dataKey="date"
-                                    tickFormatter={formatDate}
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fill: '#6B7280' }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fill: '#6B7280' }}
-                                    dx={-10}
-                                />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#fff', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', color: '#000' }}
-                                    itemStyle={{ color: '#000' }}
-                                    labelStyle={{ color: '#9CA3AF' }}
-                                    formatter={(value) => [`LKR ${value}`, 'Revenue']}
-                                    labelFormatter={formatDate}
-                                />
-                                <Line
-                                    type="monotone"
-                                    dataKey="predictedRevenue"
-                                    stroke="#000"
-                                    strokeWidth={2}
-                                    dot={{ r: 4, fill: '#000' }}
-                                    activeDot={{ r: 6 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
+                    <div className="h-64 w-full flex items-center justify-center bg-gray-100 text-gray-400">
+                        {/* Chart Disabled due to Library Incompatibility */}
+                        <p>Revenue Prediction Chart Unavailable</p>
                     </div>
                 </div>
+            </div>
+
+            {/* Stockout Risk Alert - NEW SECTION */}
+            <div className="bg-red-50 p-8 border border-red-100 rounded-lg">
+                <div className="flex items-center space-x-2 mb-6 text-red-700">
+                    <div className="h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-bold tracking-wider uppercase">Stockout Risk Alerts (High Priority)</span>
+                </div>
+
+                {data.stockRisks && data.stockRisks.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {data.stockRisks.map((item) => (
+                            <div key={item.id} className="bg-white p-4 rounded border border-red-200 shadow-sm flex items-center space-x-4">
+                                <div className="relative w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                                    <img src={`http://localhost:5001${item.image}`} alt={item.name} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-semibold text-gray-900 truncate">{item.name}</h4>
+                                    <div className="text-sm text-gray-600 mt-1 space-y-1">
+                                        <div className="flex justify-between">
+                                            <span>Current Stock:</span>
+                                            <span className="font-medium text-red-600">{item.stock} units</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span>Predicted Demand:</span>
+                                            <span className="font-medium">{item.predictedSales} units</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-gray-500 italic">No immediate stockout risks detected based on current analysis.</p>
+                )}
             </div>
         </div>
     );

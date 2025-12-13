@@ -74,7 +74,7 @@ const Cart = () => {
                                     {/* Product Image */}
                                     <div className="w-36 h-36 bg-[#f5f5f5] flex-shrink-0">
                                         <img
-                                            src={item.image}
+                                            src={`http://localhost:5001${item.image}`}
                                             alt={item.name}
                                             className="w-full h-full object-cover mix-blend-multiply"
                                         />
@@ -120,7 +120,7 @@ const Cart = () => {
                                 <div className="space-y-4 mb-6">
                                     <div className="flex justify-between text-base">
                                         <span className="text-gray-900">Subtotal</span>
-                                        <span className="font-medium">${getCartTotal()}</span>
+                                        <span className="font-medium">LKR {getCartTotal()}</span>
                                     </div>
                                     <div className="flex justify-between text-base">
                                         <span className="text-gray-900">Estimated Delivery & Handling</span>
@@ -132,7 +132,7 @@ const Cart = () => {
                                     </div>
                                     <p className="text-gray-500 text-xs mt-1">Shipping & taxes calculated at checkout</p>
                                     <button
-                                        onClick={() => alert('Checkout functionality coming soon!')}
+                                        onClick={handleCheckout}
                                         className="w-full bg-black text-white py-4 rounded-full font-bold mt-6 hover:bg-gray-800 transition-colors"
                                     >
                                         Checkout • LKR {getCartTotal()}
