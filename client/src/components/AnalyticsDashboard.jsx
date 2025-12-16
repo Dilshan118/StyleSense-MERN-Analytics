@@ -1,25 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TrendingUp, Calendar } from 'lucide-react';
+import {
+    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+    BarChart, Bar, PieChart, Pie, Cell, Legend
+} from 'recharts';
+import { TrendingUp, AlertTriangle, Package, DollarSign, Users, ShoppingBag } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
+import { getImageUrl, handleImageError } from '../utils/imageUtils';
+
+const COLORS = ['#000000', '#333333', '#666666', '#999999', '#CCCCCC'];
 
 const AnalyticsDashboard = () => {
-    const [data, setData] = useState(null);
+    const [predictData, setPredictData] = useState(null);
+    const [statsData, setStatsData] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [error, setError] = useState(null);
+
     useEffect(() => {
-        const fetchAnalytics = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5001/api/analytics/predict');
-                setData(response.data);
-                setLoading(false);
+                const [predictRes, statsRes] = await Promise.all([
+                    axios.get(`${API_BASE_URL}/api/analytics/predict`),
+                    axios.get(`${API_BASE_URL}/api/analytics/stats`)
+                ]);
+                setPredictData(predictRes.data);
+                setStatsData(statsRes.data);
             } catch (error) {
                 console.error('Error fetching analytics:', error);
+                setError(error.message || 'Failed to load data');
+            } finally {
                 setLoading(false);
             }
         };
-
-        fetchAnalytics();
+        fetchData();
     }, []);
+
 
     if (loading) {
         return (
@@ -29,72 +45,150 @@ const AnalyticsDashboard = () => {
         );
     }
 
-    if (!data) return <div>Error loading data</div>;
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64 text-red-500">
+                <AlertTriangle size={48} className="mb-4" />
+                <h3 className="text-xl font-medium">Error Loading Dashboard</h3>
+                <p>{error}</p>
+                <p className="text-sm text-gray-500 mt-2">Make sure the backend server is running and updated.</p>
+            </div>
+        );
+    }
 
-    const formatDate = (dateStr) => {
-        return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
-    };
+    if (!predictData || !statsData) return <div>No data available</div>;
+
+    const { predictions, trendAlert, stockRisks } = predictData;
+    const { totalUsers, totalOrders, totalRevenue, averageOrderValue, salesByCategory, topProducts } = statsData;
 
     return (
-        <div className="max-w-full mx-auto px-6 lg:px-12 pb-12">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                <div className="bg-[#f5f5f5] p-8 transition-transform duration-300 hover:scale-[1.02]">
-                    <div className="flex items-center space-x-2 mb-4 text-gray-500">
-                        <TrendingUp size={20} />
-                        <span className="text-sm font-medium tracking-wider">TREND ALERT</span>
+        <div className="space-y-12">
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <KpiCard title="Total Revenue" value={`LKR ${totalRevenue.toLocaleString()}`} icon={DollarSign} />
+                <KpiCard title="Total Orders" value={totalOrders} icon={ShoppingBag} />
+                <KpiCard title="Avg. Order Value" value={`LKR ${averageOrderValue}`} icon={TrendingUp} />
+                <KpiCard title="Total Customers" value={totalUsers} icon={Users} />
+            </div>
+
+            {/* Charts Section 1: Forecast & Categories */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Revenue Forecast */}
+                <div className="bg-white p-6 border border-gray-100 rounded-xl shadow-sm">
+                    <h3 className="text-lg font-medium mb-6">Revenue Forecast (Next 7 Days)</h3>
+                    <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={predictions}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                <XAxis
+                                    dataKey="date"
+                                    tickFormatter={(str) => new Date(str).toLocaleDateString('en-US', { weekday: 'short' })}
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                                    dy={10}
+                                />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                                />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#000', color: '#fff', borderRadius: '8px', border: 'none' }}
+                                    itemStyle={{ color: '#fff' }}
+                                    labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                                />
+                                <Line type="monotone" dataKey="predictedRevenue" stroke="#000" strokeWidth={2} dot={{ r: 4, fill: '#000' }} activeDot={{ r: 6 }} />
+                            </LineChart>
+                        </ResponsiveContainer>
                     </div>
-                    <h3 className="text-4xl font-medium mb-2">{data.trendAlert}</h3>
-                    <p className="text-gray-500 text-sm">Most popular category this week</p>
                 </div>
 
-                <div className="bg-[#f5f5f5] p-8 md:col-span-2 transition-transform duration-300 hover:scale-[1.01]">
-                    <div className="flex items-center space-x-2 mb-4 text-gray-500">
-                        <Calendar size={20} />
-                        <span className="text-sm font-medium tracking-wider">REVENUE FORECAST (NEXT 7 DAYS)</span>
-                    </div>
-                    <div className="h-64 w-full flex items-center justify-center bg-gray-100 text-gray-400">
-                        {/* Chart Disabled due to Library Incompatibility */}
-                        <p>Revenue Prediction Chart Unavailable</p>
+                {/* Sales by Category */}
+                <div className="bg-white p-6 border border-gray-100 rounded-xl shadow-sm">
+                    <h3 className="text-lg font-medium mb-6">Sales by Category</h3>
+                    <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={salesByCategory}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {salesByCategory.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend verticalAlign="bottom" height={36} />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
             </div>
 
-            {/* Stockout Risk Alert - NEW SECTION */}
-            <div className="bg-red-50 p-8 border border-red-100 rounded-lg">
-                <div className="flex items-center space-x-2 mb-6 text-red-700">
-                    <div className="h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-bold tracking-wider uppercase">Stockout Risk Alerts (High Priority)</span>
+            {/* Top Products & Stock Risks */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Top Products */}
+                <div className="bg-white p-6 border border-gray-100 rounded-xl shadow-sm">
+                    <h3 className="text-lg font-medium mb-6">Top Selling Products</h3>
+                    <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart layout="vertical" data={topProducts} margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
+                                <XAxis type="number" hide />
+                                <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 11 }} />
+                                <Tooltip cursor={{ fill: 'transparent' }} />
+                                <Bar dataKey="sales" fill="#000" radius={[0, 4, 4, 0]} barSize={20} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
 
-                {data.stockRisks && data.stockRisks.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {data.stockRisks.map((item) => (
-                            <div key={item.id} className="bg-white p-4 rounded border border-red-200 shadow-sm flex items-center space-x-4">
-                                <div className="relative w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                                    <img src={`http://localhost:5001${item.image}`} alt={item.name} className="w-full h-full object-cover" />
+                {/* Stock Risks */}
+                <div className="bg-red-50 p-6 border border-red-100 rounded-xl">
+                    <div className="flex items-center gap-2 mb-6">
+                        <AlertTriangle className="text-red-500" size={20} />
+                        <h3 className="text-lg font-medium text-red-700">Stockout Risks</h3>
+                    </div>
+                    <div className="space-y-4 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        {stockRisks.map(item => (
+                            <div key={item.id} className="bg-white p-3 rounded-lg border border-red-100 shadow-sm flex gap-3">
+                                <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                                    <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" onError={handleImageError} />
                                 </div>
-                                <div className="flex-1">
-                                    <h4 className="font-semibold text-gray-900 truncate">{item.name}</h4>
-                                    <div className="text-sm text-gray-600 mt-1 space-y-1">
-                                        <div className="flex justify-between">
-                                            <span>Current Stock:</span>
-                                            <span className="font-medium text-red-600">{item.stock} units</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span>Predicted Demand:</span>
-                                            <span className="font-medium">{item.predictedSales} units</span>
-                                        </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-gray-900 truncate text-sm">{item.name}</h4>
+                                    <div className="flex justify-between mt-1 text-xs">
+                                        <span className="text-gray-500">Stock: <span className="text-red-600 font-medium">{item.stock}</span></span>
+                                        <span className="text-gray-500">Predicted: {item.predictedSales}</span>
                                     </div>
                                 </div>
                             </div>
                         ))}
+                        {stockRisks.length === 0 && <p className="text-sm text-gray-500 italic">No inventory risks detected.</p>}
                     </div>
-                ) : (
-                    <p className="text-gray-500 italic">No immediate stockout risks detected based on current analysis.</p>
-                )}
+                </div>
             </div>
         </div>
     );
 };
+
+// Helper Component
+const KpiCard = ({ title, value, icon: Icon }) => (
+    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-start justify-between">
+        <div>
+            <p className="text-sm text-gray-500 mb-1">{title}</p>
+            <h3 className="text-2xl font-semibold">{value}</h3>
+        </div>
+        <div className="p-3 bg-gray-50 rounded-lg">
+            <Icon size={20} className="text-gray-700" />
+        </div>
+    </div>
+);
 
 export default AnalyticsDashboard;

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { CartContext } from '../context/CartContext';
+import { API_BASE_URL } from '../config/api';
+import { getImageUrl, handleImageError } from '../utils/imageUtils';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -17,7 +19,7 @@ const ProductDetails = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await axios.get(`http://localhost:5001/api/products/${id}`);
+                const response = await axios.get(`${API_BASE_URL}/api/products/${id}`);
                 console.log('Fetched Product Data:', response.data); // Debug log
                 setProduct(response.data);
                 // Default selections if available
@@ -70,9 +72,10 @@ const ProductDetails = () => {
                 {/* Left: Image Section */}
                 <div className="lg:w-2/3 bg-[#f5f5f5] relative flex items-center justify-center min-h-[50vh] lg:min-h-screen">
                     <img
-                        src={`http://localhost:5001${product.image}`}
+                        src={getImageUrl(product.image)}
                         alt={product.name}
                         className="w-full h-full object-cover lg:object-contain max-h-[80vh]"
+                        onError={handleImageError}
                     />
                     {product.isTrending && (
                         <div className="absolute top-8 left-8 bg-white px-3 py-1 text-xs font-bold tracking-wider">

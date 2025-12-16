@@ -26,10 +26,11 @@ exports.createOrder = async (req, res) => {
 };
 
 exports.getAllOrders = async (req, res) => {
-    try {
+    try { 
         console.log('Fetching all orders...'); // LOG
         const orders = await Order.find({})
             .populate('user', 'id name email')
+            .populate('items.product', 'name image price')
             .sort({ createdAt: -1 }); // Newest first
         console.log(`Found ${orders.length} orders`); // LOG
 
@@ -71,7 +72,9 @@ exports.updateOrderStatus = async (req, res) => {
 exports.getMyOrders = async (req, res) => {
     try {
         console.log('Fetching orders for user:', req.user._id); // LOG
-        const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+        const orders = await Order.find({ user: req.user._id })
+            .populate('items.product', 'name image price')
+            .sort({ createdAt: -1 });
         console.log(`Found ${orders.length} orders for user ${req.user._id}`); // LOG
         res.json(orders);
     } catch (error) {

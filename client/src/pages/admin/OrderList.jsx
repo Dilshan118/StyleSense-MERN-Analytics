@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Package, Clock, CheckCircle, Truck, AlertCircle, ShoppingBag } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
+import { API_BASE_URL } from '../../config/api';
+import { getImageUrl, handleImageError } from '../../utils/imageUtils';
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -19,9 +21,13 @@ const OrderList = () => {
                         Authorization: `Bearer ${currentUser.token}`,
                     },
                 };
-                const response = await axios.get('http://localhost:5001/api/orders', config);
+                const response = await axios.get(`${API_BASE_URL}/api/orders`, config);
                 // Filter out cancelled orders from the main view
                 const activeOrders = response.data.filter(order => order.status !== 'Cancelled');
+                console.log('Admin Orders Fetched:', activeOrders); // DEBUG LOG
+                if (activeOrders.length > 0 && activeOrders[0].items.length > 0) {
+                    console.log('First Order Item Product:', activeOrders[0].items[0].product); // DEBUG LOG
+                }
                 setOrders(activeOrders);
                 setLoading(false);
             } catch (error) {
@@ -47,9 +53,7 @@ const OrderList = () => {
                 payload.cancellationReason = reason;
             }
 
-            await axios.put(`http://localhost:5001/api/orders/${id}/status`, payload, config);
-
-            await axios.put(`http://localhost:5001/api/orders/${id}/status`, payload, config);
+            await axios.put(`${API_BASE_URL}/api/orders/${id}/status`, payload, config);
 
             // Optimistic update: Remove order if cancelled, otherwise update status
             if (status === 'Cancelled') {
@@ -260,10 +264,10 @@ const OrderList = () => {
                                     <div key={index} className="flex items-start gap-4 p-4 rounded-lg border border-gray-100">
                                         <div className="w-20 h-20 bg-gray-100 rounded-md flex-shrink-0 overflow-hidden">
                                             <img
-                                                src={item.product?.image ? (item.product.image.startsWith('http') ? item.product.image : `http://localhost:5001${item.product.image.startsWith('/') ? '' : '/'}${item.product.image}`) : '/placeholder.png'}
+                                                src={getImageUrl(item.product?.image)}
                                                 alt={item.product?.name || 'Product'}
                                                 className="w-full h-full object-cover"
-                                                onError={(e) => { e.target.src = '/placeholder.png'; }}
+                                                onError={handleImageError}
                                             />
                                         </div>
                                         <div className="flex-1">

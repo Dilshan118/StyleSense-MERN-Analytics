@@ -1,10 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trash2, ArrowLeft } from 'lucide-react';
+import { Trash2, ArrowLeft, Loader } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
+import { getImageUrl, handleImageError } from '../utils/imageUtils';
 
 const Cart = () => {
     const { cart, removeFromCart, getCartTotal, clearCart } = useContext(CartContext);
@@ -15,6 +18,7 @@ const Cart = () => {
     const [city, setCity] = useState('');
     const [postalCode, setPostalCode] = useState('');
     const [country, setCountry] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const [useNewAddress, setUseNewAddress] = useState(false);
     const hasDefaultAddress = user?.shippingAddress && user.shippingAddress.address;
@@ -40,20 +44,21 @@ const Cart = () => {
         if (useNewAddress) {
             // Validate form input
             if (!address || !city || !postalCode || !country) {
-                alert('Please fill in all shipping details.');
+                toast.error('Please fill in all shipping details.');
                 return;
             }
             finalShippingAddress = { address, city, postalCode, country };
         } else {
             // Use default
             if (!hasDefaultAddress) {
-                alert('No default shipping address found. Please enter one.');
+                toast.error('No default shipping address found. Please enter one.');
                 setUseNewAddress(true);
                 return;
             }
             finalShippingAddress = user.shippingAddress;
         }
 
+        setIsLoading(true);
         try {
             const orderData = {
                 items: cart.map(item => ({
@@ -67,96 +72,26 @@ const Cart = () => {
                 shippingAddress: finalShippingAddress
             };
 
-            await axios.post('http://localhost:5001/api/orders', orderData, {
+            await axios.post(`${API_BASE_URL}/api/orders`, orderData, {
                 headers: {
                     Authorization: `Bearer ${user.token}`
                 }
             });
 
             clearCart();
-            alert('Order placed successfully!');
+            toast.success('Order placed successfully!');
             navigate('/');
         } catch (error) {
             console.error('Checkout error:', error);
-            alert(error.response?.data?.message || 'Failed to place order. Please try again.');
+            toast.error(error.response?.data?.message || 'Failed to place order. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     // ... (rest of render until shipping section) ...
 
-    {/* Shipping Details */ }
-    <div className="border-t border-gray-100 pt-8">
-        <h2 className="text-xl font-medium mb-6">Shipping Information</h2>
 
-        {hasDefaultAddress && (
-            <div className="mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <div className="flex items-start justify-between mb-4">
-                    <div>
-                        <h3 className="font-semibold text-gray-900">Default Delivery Address</h3>
-                        <p className="text-sm text-gray-600 mt-1">{user.shippingAddress.address}</p>
-                        <p className="text-sm text-gray-600">{user.shippingAddress.city}, {user.shippingAddress.postalCode}</p>
-                        <p className="text-sm text-gray-600">{user.shippingAddress.country}</p>
-                    </div>
-                    <div className="bg-black text-white text-xs px-2 py-1 rounded">Default</div>
-                </div>
-
-                <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-indigo-600 hover:text-indigo-800">
-                    <input
-                        type="checkbox"
-                        checked={useNewAddress}
-                        onChange={(e) => setUseNewAddress(e.target.checked)}
-                        className="rounded border-gray-300 text-black focus:ring-black"
-                    />
-                    Ship to a different address
-                </label>
-            </div>
-        )}
-
-        {(useNewAddress || !hasDefaultAddress) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-                <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Address</label>
-                    <input
-                        type="text"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="Street Address"
-                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">City</label>
-                    <input
-                        type="text"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        placeholder="City"
-                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Postal Code</label>
-                    <input
-                        type="text"
-                        value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
-                        placeholder="ZIP Code"
-                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
-                    />
-                </div>
-                <div className="md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Country</label>
-                    <input
-                        type="text"
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        placeholder="Country"
-                        className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all"
-                    />
-                </div>
-            </div>
-        )}
-    </div>
 
     return (
         <div className="min-h-screen bg-white">
@@ -188,10 +123,10 @@ const Cart = () => {
                                     {/* Product Image */}
                                     <div className="w-36 h-36 bg-[#f5f5f5] flex-shrink-0">
                                         <img
-                                            src={item.image ? (item.image.startsWith('http') ? item.image : `http://localhost:5001${item.image.startsWith('/') ? '' : '/'}${item.image}`) : '/placeholder.png'}
+                                            src={getImageUrl(item.image)}
                                             alt={item.name}
                                             className="w-full h-full object-cover mix-blend-multiply"
-                                            onError={(e) => { e.target.src = '/placeholder.png'; }}
+                                            onError={handleImageError}
                                         />
                                     </div>
 
@@ -298,9 +233,10 @@ const Cart = () => {
                                     <p className="text-gray-500 text-xs mt-1">Shipping & taxes calculated at checkout</p>
                                     <button
                                         onClick={handleCheckout}
-                                        className="w-full bg-black text-white py-4 rounded-full font-bold mt-6 hover:bg-gray-800 transition-colors"
+                                        disabled={isLoading}
+                                        className="w-full bg-black text-white py-4 rounded-full font-bold mt-6 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
                                     >
-                                        Checkout • LKR {getCartTotal()}
+                                        {isLoading ? <Loader className="animate-spin" size={20} /> : `Checkout • LKR ${getCartTotal()}`}
                                     </button>
                                     <button className="w-full bg-[#f5f5f5] text-black py-4 rounded-full font-medium hover:bg-gray-200 transition-colors">
                                         PayPal

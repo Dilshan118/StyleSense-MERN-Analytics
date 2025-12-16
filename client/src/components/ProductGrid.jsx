@@ -6,6 +6,8 @@ import { Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { CartContext } from '../context/CartContext';
 import FilterSidebar from './FilterSidebar';
 import SecondaryNav from './SecondaryNav';
+import { API_BASE_URL } from '../config/api';
+import { getImageUrl, handleImageError } from '../utils/imageUtils';
 
 const ProductGrid = () => {
     const { addToCart } = useContext(CartContext);
@@ -27,7 +29,7 @@ const ProductGrid = () => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                let url = 'http://localhost:5001/api/products';
+                let url = `${API_BASE_URL}/api/products`;
                 const params = new URLSearchParams();
 
                 if (filter.category) params.append('category', filter.category);
@@ -150,9 +152,10 @@ const ProductGrid = () => {
                                             <Link to={`/product/${product._id}`}>
                                                 <div className="relative overflow-hidden bg-[#f5f5f5] aspect-[4/5] mb-4">
                                                     <img
-                                                        src={`http://localhost:5001${product.image}`}
+                                                        src={getImageUrl(product.image)}
                                                         alt={product.name}
                                                         className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+                                                        onError={handleImageError}
                                                     />
                                                     {product.isTrending && (
                                                         <div className="absolute top-4 left-4 bg-white px-3 py-1 text-xs font-bold tracking-wider shadow-sm">
