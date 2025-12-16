@@ -46,8 +46,6 @@
 
 ## 📸 Screenshots
 
-*(Add your screenshots here)*
-
 | **Analytics Dashboard** | **Shop Interface** |
 |:---:|:---:|
 | ![Dashboard Mockup](client/public/placeholder.png) | ![Shop Mockup](client/public/placeholder.png) |
