@@ -117,7 +117,7 @@
 ## 👨‍💻 Author
 
 **Dilshan Rajapakshe**
-*   [LinkedIn](https://www.linkedin.com/in/your-profile)
+*   [LinkedIn](https://www.linkedin.com/in/dilshan-rajapakshe-0907ba2bb/)
 *   [GitHub](https://github.com/Dilshan118)
 
 ---
