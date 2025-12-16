@@ -48,7 +48,7 @@
 
 | **Analytics Dashboard** | **Shop Interface** |
 |:---:|:---:|
-| ![Dashboard Mockup](client/public/Dashboard.png) | ![Shop Mockup](client/public/Analytics.png) |
+| ![Dashboard Mockup](client/public/Analytics.png) | ![Shop Mockup](client/public/Dashboard.png) |
 | *Real-time forecasting and risk alerts* | *Clean, responsive masonry grid* |
 
 ---
