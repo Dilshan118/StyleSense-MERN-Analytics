@@ -82,7 +82,6 @@ const Cart = () => {
             toast.success('Order placed successfully!');
             navigate('/');
         } catch (error) {
-            console.error('Checkout error:', error);
             toast.error(error.response?.data?.message || 'Failed to place order. Please try again.');
         } finally {
             setIsLoading(false);

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 export const AuthContext = createContext();
 
@@ -17,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/login', {
+            const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
                 email,
                 password,
             });
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password, role) => {
         try {
-            const response = await axios.post('http://localhost:5001/api/auth/register', {
+            const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
                 name,
                 email,
                 password,
@@ -68,7 +69,7 @@ export const AuthProvider = ({ children }) => {
                 },
             };
 
-            const response = await axios.put('http://localhost:5001/api/auth/profile', data, config);
+            const response = await axios.put(`${API_BASE_URL}/api/auth/profile`, data, config);
 
             const userData = response.data;
             setUser(userData);
@@ -92,7 +93,7 @@ export const AuthProvider = ({ children }) => {
                 },
             };
 
-            await axios.put('http://localhost:5001/api/auth/password', data, config);
+            await axios.put(`${API_BASE_URL}/api/auth/password`, data, config);
             return { success: true };
         } catch (error) {
             console.error('Password change error:', error);
