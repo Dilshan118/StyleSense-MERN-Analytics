@@ -10,6 +10,29 @@ const PORT = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 
+// Make uploads folder static (Served before rate limits)
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+// Security Middleware
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
+// Set security headers
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false
+}));
+
+// Rate limiting (Only for API routes)
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // Increased limit to 1000
+    message: "Too many requests from this IP, please try again after 15 minutes"
+});
+app.use('/api', limiter);
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/stylesense')
     .then(() => console.log('MongoDB Connected'))
@@ -25,9 +48,7 @@ app.get('/', (req, res) => {
     res.send('StyleSense API is running');
 });
 
-// Make uploads folder static
-const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

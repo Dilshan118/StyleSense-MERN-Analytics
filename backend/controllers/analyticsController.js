@@ -1,6 +1,8 @@
 const DailySales = require('../models/DailySales');
 const ss = require('simple-statistics');
 const Product = require('../models/Product');
+const Order = require('../models/Order');
+const User = require('../models/User');
 
 exports.getPredictions = async (req, res) => {
     try {
@@ -98,6 +100,77 @@ exports.getPredictions = async (req, res) => {
             predictions,
             trendAlert,
             stockRisks // Sending the new data
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getDashboardStats = async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const totalOrders = await Order.countDocuments();
+
+        const salesData = await Order.aggregate([
+            { $group: { _id: null, totalRevenue: { $sum: "$total" } } }
+        ]);
+        const totalRevenue = salesData[0]?.totalRevenue || 0;
+
+        const averageOrderValue = totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : 0;
+
+        // Sales by Category
+        const salesByCategory = await Order.aggregate([
+            { $unwind: "$items" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.product",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            { $unwind: "$productDetails" },
+            {
+                $group: {
+                    _id: "$productDetails.category",
+                    value: { $sum: { $multiply: ["$items.quantity", "$items.price"] } }
+                }
+            },
+            { $project: { name: "$_id", value: 1, _id: 0 } }
+        ]);
+
+        // Top Selling Products
+        const topProducts = await Order.aggregate([
+            { $unwind: "$items" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.product",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            { $unwind: "$productDetails" },
+            {
+                $group: {
+                    _id: "$productDetails.name",
+                    sales: { $sum: "$items.quantity" },
+                    revenue: { $sum: { $multiply: ["$items.quantity", "$items.price"] } }
+                }
+            },
+            { $sort: { sales: -1 } },
+            { $limit: 5 },
+            { $project: { name: "$_id", sales: 1, revenue: 1, _id: 0 } }
+        ]);
+
+        res.json({
+            totalUsers,
+            totalOrders,
+            totalRevenue,
+            averageOrderValue,
+            salesByCategory,
+            topProducts
         });
 
     } catch (error) {

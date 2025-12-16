@@ -1,50 +1,66 @@
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 
 exports.createOrder = async (req, res) => {
     try {
-        console.log('Creating order with body:', req.body); // LOG
-        const { items, total } = req.body;
+        const { items, total, shippingAddress } = req.body;
 
         if (!items || items.length === 0) {
             return res.status(400).json({ message: 'No items in order' });
+        }
+
+        // Verify stock before creating order
+        for (const item of items) {
+            const product = await Product.findById(item.product);
+            if (!product) {
+                return res.status(404).json({ message: `Product not found: ${item.product}` });
+            }
+            if (product.stock < item.quantity) {
+                return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
+            }
+        }
+
+        // Deduct stock
+        for (const item of items) {
+            const product = await Product.findById(item.product);
+            product.stock -= item.quantity;
+            await product.save();
         }
 
         const order = new Order({
             user: req.user._id, // From auth middleware
             items,
             total,
+            shippingAddress,
         });
 
         const createdOrder = await order.save();
-        console.log('Order created successfully:', createdOrder._id); // LOG
         res.status(201).json(createdOrder);
     } catch (error) {
-        console.error('Error creating order:', error); // LOG
+        console.error('Error creating order:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
 exports.getAllOrders = async (req, res) => {
     try {
-        console.log('Fetching all orders...'); // LOG
         const orders = await Order.find({})
             .populate('user', 'id name email')
+            .populate('items.product', 'name image price')
             .sort({ createdAt: -1 }); // Newest first
-        console.log(`Found ${orders.length} orders`); // LOG
 
         // Filter out orders with null users (deleted users) just in case
         const validOrders = orders.filter(order => order.user !== null);
 
         res.json(validOrders);
     } catch (error) {
-        console.error('Error fetching orders:', error); // LOG
         res.status(500).json({ message: error.message });
     }
 };
 
 exports.updateOrderStatus = async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status, cancellationReason } = req.body;
         const order = await Order.findById(req.params.id);
 
         if (order) {
@@ -52,6 +68,9 @@ exports.updateOrderStatus = async (req, res) => {
             order.isDelivered = status === 'Delivered';
             if (status === 'Delivered') {
                 order.deliveredAt = Date.now();
+            }
+            if (status === 'Cancelled' && cancellationReason) {
+                order.cancellationReason = cancellationReason;
             }
 
             const updatedOrder = await order.save();
@@ -66,12 +85,12 @@ exports.updateOrderStatus = async (req, res) => {
 
 exports.getMyOrders = async (req, res) => {
     try {
-        console.log('Fetching orders for user:', req.user._id); // LOG
-        const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
-        console.log(`Found ${orders.length} orders for user ${req.user._id}`); // LOG
+        const orders = await Order.find({ user: req.user._id })
+            .populate('items.product', 'name image price')
+            .sort({ createdAt: -1 });
         res.json(orders);
     } catch (error) {
-        console.error('Error fetching my orders:', error); // LOG
+        console.error('Error fetching my orders:', error);
         res.status(500).json({ message: error.message });
     }
 };

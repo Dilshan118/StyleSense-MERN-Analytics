@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
+import { getImageUrl, handleImageError } from '../utils/imageUtils';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
@@ -10,11 +12,10 @@ const Shop = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5001/api/products');
+                const { data } = await axios.get(`${API_BASE_URL}/api/products`);
                 setProducts(data);
                 setLoading(false);
             } catch (error) {
-                console.error(error);
                 setLoading(false);
             }
         };
@@ -41,9 +42,10 @@ const Shop = () => {
                                 <div className="aspect-[3/4] w-full overflow-hidden rounded-lg bg-gray-100 mb-4 relative">
                                     {product.image ? (
                                         <img
-                                            src={`http://localhost:5001${product.image}`}
+                                            src={getImageUrl(product.image)}
                                             alt={product.name}
                                             className="h-full w-full object-cover object-center group-hover:opacity-75 transition-opacity"
+                                            onError={handleImageError}
                                         />
                                     ) : (
                                         <div className="h-full w-full flex items-center justify-center text-gray-400">No Image</div>

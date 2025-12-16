@@ -68,18 +68,14 @@ exports.getProductById = async (req, res) => {
 // @access  Private/Admin
 exports.deleteProduct = async (req, res) => {
     try {
-        console.log(`[ProductId: ${req.params.id}] Deleting product...`);
         const product = await Product.findByIdAndDelete(req.params.id);
 
         if (product) {
-            console.log(`[ProductId: ${req.params.id}] Product deleted successfully.`);
             res.json({ message: 'Product removed' });
         } else {
-            console.log(`[ProductId: ${req.params.id}] Product not found.`);
             res.status(404).json({ message: 'Product not found' });
         }
     } catch (error) {
-        console.error(`[ProductId: ${req.params.id}] Error deleting product:`, error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -122,7 +118,6 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try {
         const { name, price, category, subCategory, description, sizes, colors, stock, isTrending } = req.body;
-        console.log(`[ProductId: ${req.params.id}] Update Request Body:`, req.body); // Debug log
 
         const product = await Product.findById(req.params.id);
 
