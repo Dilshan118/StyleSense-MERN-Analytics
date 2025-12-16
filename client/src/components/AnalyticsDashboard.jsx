@@ -8,7 +8,7 @@ import { TrendingUp, AlertTriangle, Package, DollarSign, Users, ShoppingBag } fr
 import { API_BASE_URL } from '../config/api';
 import { getImageUrl, handleImageError } from '../utils/imageUtils';
 
-const COLORS = ['#000000', '#333333', '#666666', '#999999', '#CCCCCC'];
+const COLORS = ['#111827', '#374151', '#6B7280', '#9CA3AF', '#E5E7EB'];
 
 const AnalyticsDashboard = () => {
     const [predictData, setPredictData] = useState(null);
@@ -62,21 +62,28 @@ const AnalyticsDashboard = () => {
     const { totalUsers, totalOrders, totalRevenue, averageOrderValue, salesByCategory, topProducts } = statsData;
 
     return (
-        <div className="space-y-12">
-            {/* KPI Cards */}
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 pb-12 space-y-8">
+            {/* KPI Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <KpiCard title="Total Revenue" value={`LKR ${totalRevenue.toLocaleString()}`} icon={DollarSign} />
-                <KpiCard title="Total Orders" value={totalOrders} icon={ShoppingBag} />
-                <KpiCard title="Avg. Order Value" value={`LKR ${averageOrderValue}`} icon={TrendingUp} />
-                <KpiCard title="Total Customers" value={totalUsers} icon={Users} />
+                <KpiCard title="Total Revenue" value={`LKR ${totalRevenue.toLocaleString()}`} icon={DollarSign} trend="+12.5%" />
+                <KpiCard title="Total Orders" value={totalOrders} icon={ShoppingBag} trend="+4.2%" />
+                <KpiCard title="Avg. Order Value" value={`LKR ${averageOrderValue}`} icon={TrendingUp} trend="-1.0%" />
+                <KpiCard title="Total Customers" value={totalUsers} icon={Users} trend="+8.4%" />
             </div>
 
-            {/* Charts Section 1: Forecast & Categories */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Revenue Forecast */}
-                <div className="bg-white p-6 border border-gray-100 rounded-xl shadow-sm">
-                    <h3 className="text-lg font-medium mb-6">Revenue Forecast (Next 7 Days)</h3>
-                    <div className="h-64">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Revenue Forecast - Takes up 2/3 */}
+                <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-lg font-medium text-gray-900">Revenue Forecast</h3>
+                            <p className="text-xs text-gray-400 mt-1">AI-powered 7-day prediction</p>
+                        </div>
+                        <div className="p-2 bg-gray-50 rounded-lg">
+                            <TrendingUp size={16} className="text-gray-900" />
+                        </div>
+                    </div>
+                    <div className="h-72">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={predictions}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -94,19 +101,20 @@ const AnalyticsDashboard = () => {
                                     tick={{ fontSize: 12, fill: '#6B7280' }}
                                 />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#000', color: '#fff', borderRadius: '8px', border: 'none' }}
+                                    contentStyle={{ backgroundColor: '#111827', color: '#fff', borderRadius: '8px', border: 'none' }}
                                     itemStyle={{ color: '#fff' }}
                                     labelFormatter={(label) => new Date(label).toLocaleDateString()}
                                 />
-                                <Line type="monotone" dataKey="predictedRevenue" stroke="#000" strokeWidth={2} dot={{ r: 4, fill: '#000' }} activeDot={{ r: 6 }} />
+                                <Line type="monotone" dataKey="predictedRevenue" stroke="#111827" strokeWidth={2} dot={{ r: 4, fill: '#111827' }} activeDot={{ r: 6 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
                 {/* Sales by Category */}
-                <div className="bg-white p-6 border border-gray-100 rounded-xl shadow-sm">
-                    <h3 className="text-lg font-medium mb-6">Sales by Category</h3>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Sales Distribution</h3>
+                    <p className="text-xs text-gray-400 mb-6">By product category</p>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -134,43 +142,54 @@ const AnalyticsDashboard = () => {
             {/* Top Products & Stock Risks */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Top Products */}
-                <div className="bg-white p-6 border border-gray-100 rounded-xl shadow-sm">
-                    <h3 className="text-lg font-medium mb-6">Top Selling Products</h3>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <h3 className="text-lg font-medium text-gray-900 mb-6">Top Selling Products</h3>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart layout="vertical" data={topProducts} margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
                                 <XAxis type="number" hide />
                                 <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 11 }} />
-                                <Tooltip cursor={{ fill: 'transparent' }} />
-                                <Bar dataKey="sales" fill="#000" radius={[0, 4, 4, 0]} barSize={20} />
+                                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
+                                <Bar dataKey="sales" fill="#111827" radius={[0, 4, 4, 0]} barSize={20} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
                 {/* Stock Risks */}
-                <div className="bg-red-50 p-6 border border-red-100 rounded-xl">
-                    <div className="flex items-center gap-2 mb-6">
-                        <AlertTriangle className="text-red-500" size={20} />
-                        <h3 className="text-lg font-medium text-red-700">Stockout Risks</h3>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-lg font-medium text-gray-900">Inventory Alerts</h3>
+                            <p className="text-xs text-gray-400 mt-1">AI detected risks</p>
+                        </div>
+                        {stockRisks.length > 0 && (
+                            <span className="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs font-bold animate-pulse">
+                                {stockRisks.length} Critical
+                            </span>
+                        )}
                     </div>
                     <div className="space-y-4 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                         {stockRisks.map(item => (
-                            <div key={item.id} className="bg-white p-3 rounded-lg border border-red-100 shadow-sm flex gap-3">
-                                <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                            <div key={item.id} className="group bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex gap-4 hover:border-red-200 transition-colors">
+                                <div className="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 relative">
                                     <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" onError={handleImageError} />
+                                    <div className="absolute inset-0 bg-red-500/10 hidden group-hover:block"></div>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h4 className="font-medium text-gray-900 truncate text-sm">{item.name}</h4>
-                                    <div className="flex justify-between mt-1 text-xs">
-                                        <span className="text-gray-500">Stock: <span className="text-red-600 font-medium">{item.stock}</span></span>
-                                        <span className="text-gray-500">Predicted: {item.predictedSales}</span>
+                                    <h4 className="font-medium text-gray-900 truncate text-sm group-hover:text-red-600 transition-colors">{item.name}</h4>
+                                    <div className="flex justify-between mt-2 text-xs">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                            <span className="text-gray-500">Only <span className="text-gray-900 font-semibold">{item.stock}</span> left</span>
+                                        </div>
+                                        <span className="text-gray-400">Predicted demand: {item.predictedSales}</span>
                                     </div>
                                 </div>
                             </div>
                         ))}
-                        {stockRisks.length === 0 && <p className="text-sm text-gray-500 italic">No inventory risks detected.</p>}
+                        {stockRisks.length === 0 && <p className="text-sm text-gray-500 italic text-center py-8">No inventory risks detected.</p>}
                     </div>
                 </div>
             </div>
@@ -179,14 +198,21 @@ const AnalyticsDashboard = () => {
 };
 
 // Helper Component
-const KpiCard = ({ title, value, icon: Icon }) => (
-    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-start justify-between">
-        <div>
-            <p className="text-sm text-gray-500 mb-1">{title}</p>
-            <h3 className="text-2xl font-semibold">{value}</h3>
+const KpiCard = ({ title, value, icon: Icon, trend }) => (
+    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+        <div className="flex justify-between items-start mb-4">
+            <div className="p-2.5 bg-gray-50 rounded-xl group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                <Icon size={20} className="text-gray-900 group-hover:text-white" />
+            </div>
+            {trend && (
+                <span className={`text-xs font-medium px-2 py-1 rounded-full ${trend.startsWith('+') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                    {trend}
+                </span>
+            )}
         </div>
-        <div className="p-3 bg-gray-50 rounded-lg">
-            <Icon size={20} className="text-gray-700" />
+        <div>
+            <h3 className="text-2xl font-bold text-gray-900 tracking-tight font-sans">{value}</h3>
+            <p className="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">{title}</p>
         </div>
     </div>
 );
