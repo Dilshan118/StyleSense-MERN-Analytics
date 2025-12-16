@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import { Plus, Pencil, Trash2, Search, Filter, X, AlertTriangle } from 'lucide-react';
+import { API_BASE_URL } from '../../config/api';
+import { getImageUrl, handleImageError } from '../../utils/imageUtils';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -16,7 +18,7 @@ const ProductList = () => {
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get('http://localhost:5001/api/products');
+            const { data } = await axios.get(`${API_BASE_URL}/api/products`);
             setProducts(data);
             setLoading(false);
         } catch (error) {
@@ -38,7 +40,7 @@ const ProductList = () => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            await axios.delete(`http://localhost:5001/api/products/${deleteModal.id}`, config);
+            await axios.delete(`${API_BASE_URL}/api/products/${deleteModal.id}`, config);
 
             // Close modal and refresh
             setDeleteModal({ open: false, id: null, name: '' });
@@ -126,9 +128,10 @@ const ProductList = () => {
                                             <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
                                                 {product.image ? (
                                                     <img
-                                                        src={`http://localhost:5001${product.image}`}
+                                                        src={getImageUrl(product.image)}
                                                         alt={product.name}
                                                         className="h-full w-full object-cover"
+                                                        onError={handleImageError}
                                                     />
                                                 ) : (
                                                     <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs">No Img</div>

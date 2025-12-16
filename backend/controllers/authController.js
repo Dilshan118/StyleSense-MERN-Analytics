@@ -58,6 +58,7 @@ exports.login = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            shippingAddress: user.shippingAddress,
             token: generateToken(user._id),
         });
     } catch (error) {
@@ -74,19 +75,29 @@ exports.updateProfile = async (req, res) => {
             user.email = req.body.email || user.email;
             user.phone = req.body.phone || user.phone;
 
+            if (req.body.shippingAddress) {
+                user.shippingAddress = user.shippingAddress || {};
+                user.shippingAddress.address = req.body.shippingAddress.address || user.shippingAddress.address;
+                user.shippingAddress.city = req.body.shippingAddress.city || user.shippingAddress.city;
+                user.shippingAddress.postalCode = req.body.shippingAddress.postalCode || user.shippingAddress.postalCode;
+                user.shippingAddress.country = req.body.shippingAddress.country || user.shippingAddress.country;
+
+                user.markModified('shippingAddress');
+            }
+
             if (req.body.password) {
                 const salt = await bcrypt.genSalt(10);
                 user.password = await bcrypt.hash(req.body.password, salt);
             }
 
             const updatedUser = await user.save();
-
             res.json({
                 _id: updatedUser._id,
                 name: updatedUser.name,
                 email: updatedUser.email,
                 phone: updatedUser.phone,
                 role: updatedUser.role,
+                shippingAddress: updatedUser.shippingAddress,
                 token: generateToken(updatedUser._id),
             });
         } else {

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
-import { User, Mail, Phone, Lock, Save, ShieldCheck, AlertCircle, CheckCircle2, Package, Clock, XCircle, ChevronRight, LogOut, CreditCard } from 'lucide-react';
+import { User, Mail, Phone, Lock, Save, ShieldCheck, AlertCircle, CheckCircle2, Package, Clock, XCircle, ChevronRight, LogOut, CreditCard, MapPin, Map, Globe, Hash } from 'lucide-react';
 import axios from 'axios';
 
 const Profile = () => {
@@ -11,6 +11,10 @@ const Profile = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
+    const [postalCode, setPostalCode] = useState('');
+    const [country, setCountry] = useState('');
     const [isEditing, setIsEditing] = useState(false);
 
     // Password State
@@ -30,6 +34,12 @@ const Profile = () => {
             setName(user.name || '');
             setEmail(user.email || '');
             setPhone(user.phone || '');
+            if (user.shippingAddress) {
+                setAddress(user.shippingAddress.address || '');
+                setCity(user.shippingAddress.city || '');
+                setPostalCode(user.shippingAddress.postalCode || '');
+                setCountry(user.shippingAddress.country || '');
+            }
         }
     }, [user]);
 
@@ -37,7 +47,17 @@ const Profile = () => {
         e.preventDefault();
         setProfileMessage({ type: '', text: '' });
 
-        const result = await updateProfile({ name, email, phone });
+        const result = await updateProfile({
+            name,
+            email,
+            phone,
+            shippingAddress: {
+                address,
+                city,
+                postalCode,
+                country
+            }
+        });
 
         if (result.success) {
             setProfileMessage({ type: 'success', text: 'Profile updated successfully' });
@@ -107,8 +127,8 @@ const Profile = () => {
                                     key={item.id}
                                     onClick={() => setActiveTab(item.id)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${activeTab === item.id
-                                            ? 'bg-black text-white shadow-md shadow-black/10'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        ? 'bg-black text-white shadow-md shadow-black/10'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                 >
                                     <item.icon size={18} />
@@ -181,6 +201,52 @@ const Profile = () => {
                                                     disabled={!isEditing}
                                                     placeholder="you@example.com"
                                                 />
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-6 border-t border-gray-100">
+                                            <h3 className="text-lg font-bold text-gray-900 mb-4">Shipping Address</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="md:col-span-2">
+                                                    <InputGroup
+                                                        icon={MapPin}
+                                                        label="Address"
+                                                        type="text"
+                                                        value={address}
+                                                        onChange={(e) => setAddress(e.target.value)}
+                                                        disabled={!isEditing}
+                                                        placeholder="Street Address"
+                                                    />
+                                                </div>
+                                                <InputGroup
+                                                    icon={Map}
+                                                    label="City"
+                                                    type="text"
+                                                    value={city}
+                                                    onChange={(e) => setCity(e.target.value)}
+                                                    disabled={!isEditing}
+                                                    placeholder="City"
+                                                />
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <InputGroup
+                                                        icon={Hash}
+                                                        label="Postal Code"
+                                                        type="text"
+                                                        value={postalCode}
+                                                        onChange={(e) => setPostalCode(e.target.value)}
+                                                        disabled={!isEditing}
+                                                        placeholder="ZIP Code"
+                                                    />
+                                                    <InputGroup
+                                                        icon={Globe}
+                                                        label="Country"
+                                                        type="text"
+                                                        value={country}
+                                                        onChange={(e) => setCountry(e.target.value)}
+                                                        disabled={!isEditing}
+                                                        placeholder="Country"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 
@@ -339,7 +405,9 @@ const OrderHistory = () => {
                                     <div className="flex items-center gap-3">
                                         <span className="text-sm font-bold text-gray-900">#{order._id.slice(-8).toUpperCase()}</span>
                                         <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                        <span className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</span>
+                                        <span className="text-sm text-gray-500">
+                                            Payment Date: {new Date(order.date).toLocaleDateString()}
+                                        </span>
                                     </div>
                                     <p className="text-xs text-gray-400 font-mono hidden sm:block">ID: {order._id}</p>
                                 </div>
@@ -348,6 +416,14 @@ const OrderHistory = () => {
                                     <span className="text-lg font-bold text-gray-900">LKR {order.total.toLocaleString()}</span>
                                 </div>
                             </div>
+
+                            {order.status === 'Cancelled' && order.cancellationReason && (
+                                <div className="mt-3 bg-red-50 p-3 rounded-lg border border-red-100">
+                                    <p className="text-sm text-red-700">
+                                        <span className="font-bold">Cancellation Reason:</span> {order.cancellationReason}
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
                                 {order.items.map((item, index) => (
@@ -358,18 +434,22 @@ const OrderHistory = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-medium text-gray-900">{item.product?.name || 'Product Item'}</p>
-                                                <p className="text-xs text-gray-500">Size: {item.size} • Color: {item.color} • Qty: {item.quantity}</p>
+                                                <p className="text-xs text-gray-500">Size: {item.size} • Color: {item.color}</p>
                                             </div>
                                         </div>
-                                        <span className="text-sm font-medium text-gray-700">LKR {(item.price * item.quantity).toLocaleString()}</span>
+                                        <div className="text-right">
+                                            <p className="text-sm font-medium text-gray-900">LKR {(item.price * item.quantity).toLocaleString()}</p>
+                                            <p className="text-xs text-gray-500">{item.quantity} x LKR {item.price.toLocaleString()}</p>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    ))}
-                </div>
+                    ))
+                    }
+                </div >
             )}
-        </div>
+        </div >
     );
 };
 

@@ -17,12 +17,15 @@ import UserList from './pages/admin/UserList';
 import OrderList from './pages/admin/OrderList';
 import Shop from './pages/Shop'; // Added based on the route in the provided Code Edit
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <CartProvider>
           <div className="App">
+            <Toaster position="top-center" reverseOrder={false} />
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
